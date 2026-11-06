@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <link rel="icon" href="logo.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mr Thayer — Graphic Designer &amp; Motion Designer</title>
+<title>Mr Thayer | Graphic Designer, Art Director &amp; Motion Designer</title>
+<meta property="og:title" content="Mr Thayer | Graphic Designer &amp; Motion Designer">
+<meta property="og:image" content="cover-banner.jpg">
+<meta name="theme-color" content="#070b24">
 <meta name="description" content="Jafar Abo Shami (Mr Thayer): graphic designer, art director and motion designer. Brand identity, social media design and video.">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
@@ -79,39 +82,113 @@ body { font-family: 'Outfit', sans-serif; color: #ffffff; overflow-x: hidden; cu
   .grid-lines { left: 12px; right: 12px; width: calc(100% - 24px); }
 }
 
-.after { position: relative; z-index: 30; background: #070b24; padding: 0 60px 40px; }
-.after .inner { max-width: 1100px; margin: 0 auto; }
-.after section { padding: 90px 0 10px; }
-.after h2 { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: clamp(36px, 6vw, 72px); line-height: 1.05; letter-spacing: -0.025em; color: #ffffff; margin-bottom: 14px; }
-.after .lead { color: #c2c6ce; font-weight: 300; font-size: 17px; max-width: 600px; margin-bottom: 36px; line-height: 1.85; }
+/* orbit callouts */
+.orbit-callouts { position: fixed; inset: 0; z-index: 8; pointer-events: none; }
+.callout { position: absolute; display: flex; align-items: center; gap: 12px; max-width: 330px; opacity: 0; transform: translateY(20px); filter: blur(8px); transition: opacity .8s cubic-bezier(0.25,1,0.5,1), transform .8s cubic-bezier(0.25,1,0.5,1), filter .8s cubic-bezier(0.25,1,0.5,1); }
+.callout.active { opacity: 1; transform: translateY(0); filter: blur(0); }
+.callout.left { left: 7vw; }
+.callout.right { right: 7vw; }
+.callout p { font-size: 15px; font-weight: 400; line-height: 1.5; color: rgba(255,255,255,.88); }
+.callout.left p { text-align: left; }
+.callout .dot { width: 6px; height: 6px; border-radius: 50%; background: #a552e2; box-shadow: 0 0 10px #a552e2; flex: none; }
+.callout .line { width: 60px; height: 1px; background: rgba(255,255,255,.4); flex: none; }
+.scroll-hint { position: fixed; right: 60px; bottom: 44px; z-index: 12; display: flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.7); transition: opacity .6s; pointer-events: none; }
+.scroll-hint i { display: block; width: 1px; height: 46px; background: linear-gradient(#a552e2, transparent); animation: hint 1.8s ease-in-out infinite; }
+@keyframes hint { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.scroll-hint.gone { opacity: 0; }
+
+/* content after the stage */
+.after { position: relative; z-index: 30; padding: 0 0 40px; background-color: #070b24;
+  background-image: radial-gradient(rgba(165,82,226,.17) 1px, transparent 1.3px), radial-gradient(60vmax 40vmax at 0% 0%, rgba(165,82,226,.16), transparent 62%), radial-gradient(55vmax 40vmax at 100% 55%, rgba(227,17,4,.09), transparent 62%), radial-gradient(60vmax 40vmax at 0% 100%, rgba(165,82,226,.12), transparent 62%);
+  background-size: 28px 28px, auto, auto, auto; }
+.after .inner { max-width: 1100px; margin: 0 auto; padding: 0 60px; }
+.after section { padding: 96px 0 8px; }
+.after h2 { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: clamp(36px, 6vw, 72px); line-height: 1.05; letter-spacing: -0.025em; color: #fff; margin-bottom: 14px; }
+.after .lead { color: #c2c6ce; font-weight: 300; font-size: 17px; max-width: 620px; margin-bottom: 36px; line-height: 1.85; }
+.after a { color: inherit; }
+.marquee { overflow: hidden; border-block: 1px solid rgba(255,255,255,.12); background: rgba(7,11,36,.7); padding: 18px 0; }
+.marquee div { display: flex; gap: 48px; width: max-content; animation: scrollx 38s linear infinite; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; white-space: nowrap; }
+.marquee span { display: flex; align-items: center; gap: 48px; }
+.marquee span::after { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #e31104; }
+.marquee span:nth-child(even) { color: #a552e2; }
+@keyframes scrollx { to { transform: translateX(-50%); } }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.filters button { font: inherit; font-size: 14px; padding: 8px 20px; border-radius: 999px; border: 1.5px solid #a552e2; background: rgba(7,11,36,.6); color: #fff; }
+.filters button[aria-pressed=true] { background: #a552e2; }
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
-.gallery figure { position: relative; aspect-ratio: 1; overflow: hidden; background: #0e1438; }
-.gallery img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(0.16,1,0.3,1); }
-.gallery figure:hover img { transform: scale(1.06); }
-.gallery figcaption { position: absolute; inset: auto 0 0; padding: 16px 14px 12px; background: linear-gradient(transparent, rgba(0,0,0,.8)); font-size: 14px; font-weight: 400; }
-.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; }
+.tile { position: relative; display: block; width: 100%; aspect-ratio: 4/5; padding: 0; border: 1px solid rgba(255,255,255,.1); background: #0e1438; overflow: hidden; color: #fff; font: inherit; text-align: left; }
+.tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(0.16,1,0.3,1); }
+.tile.sq img { object-fit: contain; }
+.tile:hover img { transform: scale(1.05); }
+.tile .cap { position: absolute; inset: auto 0 0; padding: 26px 14px 12px; background: linear-gradient(transparent, rgba(4,6,20,.88)); font-size: 14px; font-weight: 400; }
+.tile .cap small { display: block; font-size: 12px; color: #a552e2; font-weight: 600; letter-spacing: .5px; }
+.more { margin-top: 26px; font: inherit; font-weight: 600; padding: 12px 34px; border-radius: 999px; border: 0; background: #e31104; color: #fff; }
+.more[hidden] { display: none; }
+dialog { border: 0; background: none; padding: 0; max-width: 100vw; max-height: 100vh; color: #fff; }
+dialog::backdrop { background: rgba(4,6,20,.94); }
+.lb { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 14px; }
+.lb img { max-width: 92vw; max-height: 78vh; display: block; }
+.lb p { font-weight: 400; }
+.lb-bar { display: flex; gap: 14px; }
+.lb-bar button { font: inherit; padding: 8px 22px; border-radius: 999px; border: 1.5px solid #a552e2; background: rgba(7,11,36,.8); color: #fff; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 0 0 40px; }
+.stat { padding: 22px 20px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.03); }
+.stat b { display: block; font-size: clamp(34px, 5vw, 52px); font-weight: 700; letter-spacing: -0.03em; color: #fff; line-height: 1.1; }
+.stat span { color: #a9aeb9; font-weight: 300; font-size: 14px; }
+.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.skills > div { padding: 22px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.03); }
 .skills h3 { font-weight: 600; font-size: 19px; letter-spacing: -0.01em; color: #fff; border-bottom: 2px solid #a552e2; padding-bottom: 12px; margin-bottom: 12px; }
 .skills p { color: #b4b8c1; font-weight: 300; font-size: 15px; line-height: 1.8; }
-.list { list-style: none; }
+.cover { width: 100%; display: block; margin-top: 28px; border: 1px solid rgba(255,255,255,.12); }
+.list { list-style: none; padding: 0; }
 .list li { display: flex; justify-content: space-between; gap: 16px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,.1); font-weight: 300; color: #d6d9df; }
 .list li span { color: #8e939e; font-size: 14px; white-space: nowrap; }
-.list a { color: #fff; font-weight: 400; text-decoration: underline; text-decoration-color: rgba(255,255,255,.3); text-underline-offset: 4px; }
-.list a:hover { text-decoration-color: #e31104; }
-.big-mail { display: block; font-family: 'Outfit', sans-serif; font-weight: 600; letter-spacing: -0.02em; font-size: clamp(24px, 5.5vw, 56px); color: #ffffff; text-decoration: none; word-break: break-all; }
-.links { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 20px; }
-.links a { color: #fff; text-decoration: none; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 2px solid #e31104; padding-bottom: 3px; }
-.after footer { margin-top: 90px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.12); color: #9ca3af; font-size: 13px; }
-dialog { border: 0; background: none; max-width: 94vw; max-height: 94vh; padding: 0; }
-dialog::backdrop { background: rgba(4,6,20,.92); }
-dialog img { max-width: 94vw; max-height: 90vh; display: block; }
-@media (max-width: 900px) { .after { padding: 0 24px 30px; } }
+.list a { color: #fff; font-weight: 400; text-decoration: underline; text-decoration-color: rgba(227,17,4,.7); text-underline-offset: 4px; }
+.list small { display: block; margin-top: 2px; color: #9aa0ac; font-size: 14px; max-width: 560px; }
+.big-mail { display: block; font-weight: 600; letter-spacing: -0.02em; font-size: clamp(24px, 5.5vw, 56px); color: #fff; text-decoration: none; word-break: break-all; }
+.links { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 24px; }
+.links a { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; border-bottom: 2px solid #e31104; padding-bottom: 3px; }
+.cta { display: inline-block; margin-top: 30px; padding: 14px 34px; border-radius: 999px; background: #a552e2; color: #fff !important; font-weight: 600; text-decoration: none; transition: background .3s, transform .3s; }
+.cta:hover { background: #e31104; transform: scale(1.04); }
+.after footer { margin-top: 90px; padding-top: 26px; border-top: 1px solid rgba(255,255,255,.12); color: #9aa0ac; font-size: 13px; line-height: 1.7; }
+.footer-logo { height: 70px; width: auto; display: block; margin-bottom: 16px; }
+.nodrag img { -webkit-user-drag: none; }
+@media (max-width: 900px) {
+  .callout { left: 24px !important; right: auto !important; top: 16% !important; max-width: 70vw; }
+  .callout.b { display: none; }
+  .callout p { font-size: 13px; }
+  .callout .line { width: 30px; }
+  .scroll-hint { right: 24px; bottom: 28px; }
+  .brand-logo { height: 32px; }
+  .after .inner { padding: 0 24px; }
+  .after section { padding-top: 70px; }
+  .gallery { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .tile .cap { font-size: 12px; padding: 20px 8px 8px; }
+  .marquee div { font-size: 20px; }
+}
+@media (pointer: coarse) {
+  body, * { cursor: auto !important; }
+  .cursor-inner, .cursor-outer { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .marquee div, .scroll-hint i { animation: none; } }
+/* sound button, status pill, canvas fallback */
+#webgl { background: radial-gradient(70% 60% at 70% 45%, #1b1450 0%, #070b24 72%); }
+.status { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 15; max-width: 86vw; padding: 9px 18px; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; background: rgba(7,11,36,.86); color: #d1d5db; font-size: 13px; text-align: center; pointer-events: none; }
+.status[hidden] { display: none; }
+.status.bad { border-color: #e31104; color: #fff; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.snd { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,.35); background: rgba(7,11,36,.55); color: #fff; font: inherit; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.snd .eq { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.snd .eq i { display: block; width: 3px; height: 4px; background: #a552e2; border-radius: 1px; }
+.snd.on .eq i { animation: eq .9s ease-in-out infinite; }
+.snd.on .eq i:nth-child(2) { animation-delay: .2s; } .snd.on .eq i:nth-child(3) { animation-delay: .4s; }
+@keyframes eq { 0%,100% { height: 3px; } 50% { height: 12px; } }
+.snd.attn { border-color: #a552e2; animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(165,82,226,.55); } 50% { box-shadow: 0 0 0 9px rgba(165,82,226,0); } }
+@media (max-width: 600px) { .snd { padding: 9px 12px; } .snd:not(.attn) .lbl { display: none; } .contact-btn { padding: 9px 16px; } }
+@media (prefers-reduced-motion: reduce) { .snd.attn, .snd.on .eq i { animation: none; } }
+
 </style>
-<script type="importmap">
-{ "imports": {
-  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-  "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
-} }
-</script>
 </head>
 <body>
 <div class="cursor-inner"></div>
@@ -126,7 +203,7 @@ dialog img { max-width: 94vw; max-height: 90vh; display: block; }
       <a href="#slide-3" class="nav-link">Motion</a><span class="nav-dot"></span>
       <a href="#work" class="nav-link">Work</a>
     </nav>
-    <div class="header-actions"><a href="#contact" class="contact-btn">Contact <span class="btn-circle"></span></a></div>
+    <div class="header-actions"><button id="snd" class="snd" type="button" aria-pressed="true" aria-label="Toggle sound"><span class="eq"><i></i><i></i><i></i></span><span class="lbl">Tap for sound</span></button><a href="#contact" class="contact-btn">Contact <span class="btn-circle"></span></a></div>
   </div>
 
   <div class="slide" id="slide-1">
@@ -136,7 +213,7 @@ dialog img { max-width: 94vw; max-height: 90vh; display: block; }
       <p class="slide-desc col-2">I shape visual voices for brands across Syria, the UAE, Saudi Arabia, India and Oman, and keep every logo, post and reel part of one consistent story.</p>
     </div>
   </div>
-  <div class="slide-image-mask" id="slide-2-img"><img src="1.jpg" alt="Selected design by Mr Thayer"></div>
+  <div class="slide-image-mask" id="slide-2-img"><img src="poster-chess-crown.jpg" alt="Selected design by Mr Thayer"></div>
   <div class="slide" id="slide-2">
     <h2 class="slide-title">Brand <br>Identity</h2>
     <p class="slide-desc">Logos and visual systems that carry a brand's personality, from Aetheria and Cyto Gurus to Naqaa and Void Art. Clear, memorable and built to last.</p>
@@ -168,44 +245,56 @@ dialog img { max-width: 94vw; max-height: 90vh; display: block; }
   </div>
 </div>
 <canvas id="webgl"></canvas>
+<div class="status" id="status" role="status">Loading…</div>
 <div id="stage"></div>
-<main class="after"><div class="inner">
-  <section id="work">
-    <h2>Selected Work</h2>
-    <p class="lead">Brand identities, logos and campaign designs. Tap any piece to enlarge it.</p>
-    <div class="gallery" id="gallery">
-      <figure><img loading="lazy" src="brand-aetheria.jpg" alt="Aetheria identity"><figcaption>Aetheria identity</figcaption></figure>
-      <figure><img loading="lazy" src="brand-cyto.jpg" alt="Cyto Gurus logo"><figcaption>Cyto Gurus logo</figcaption></figure>
-      <figure><img loading="lazy" src="brand-void.jpg" alt="Void Art identity"><figcaption>Void Art identity</figcaption></figure>
-      <figure><img loading="lazy" src="brand-naqaa.jpg" alt="Naqaa logo"><figcaption>Naqaa logo</figcaption></figure>
-      <figure><img loading="lazy" src="brand-hookah.jpg" alt="Al-Shaalan logo"><figcaption>Al-Shaalan logo</figcaption></figure>
-      <figure><img loading="lazy" src="brand-law.jpg" alt="Law office logo"><figcaption>Law office logo</figcaption></figure>
-      <figure><img loading="lazy" src="poster-ideas.jpg" alt="Creative Ideas poster"><figcaption>Creative Ideas poster</figcaption></figure>
-      <figure><img loading="lazy" src="poster-skewer.jpg" alt="Social media design"><figcaption>Social media design</figcaption></figure>
-      <figure><img loading="lazy" src="poster-bulbs.jpg" alt="Think Different"><figcaption>Think Different</figcaption></figure>
-      <figure><img loading="lazy" src="poster-hat.jpg" alt="Digital illustration"><figcaption>Digital illustration</figcaption></figure>
-      <figure><img loading="lazy" src="poster-hand.jpg" alt="Photo manipulation"><figcaption>Photo manipulation</figcaption></figure>
-      <figure><img loading="lazy" src="poster-ring.jpg" alt="Advertising design"><figcaption>Advertising design</figcaption></figure>
-    </div>
-  </section>
-  <section id="about">
-    <h2>What I Do</h2>
-    <p class="lead">Graphic designer and art director with 6+ years across food and beverage, legal services, technology, interior design and business consulting.</p>
-    <div class="skills">
-      <div><h3>Design</h3><p>Brand identity, logos, social media, packaging, print, menus, infographics and color correction.</p></div>
-      <div><h3>Video and Motion</h3><p>Video editing, motion graphics and short-form content for social media.</p></div>
-      <div><h3>Software</h3><p>Photoshop, Illustrator, InDesign, Premiere Pro, After Effects, Animate, DaVinci Resolve.</p></div>
-      <div><h3>Languages</h3><p>Arabic (native) and English (professional working proficiency).</p></div>
-    </div>
-  </section>
-  <section id="experience">
-    <h2>Experience</h2>
-    <p class="lead">Several roles were held in parallel on a part-time basis. Tap a client to see their Instagram.</p>
-    <ul class="list">
-      <li><div><a href="https://www.instagram.com/mr_thayer">Mr Thayer, art director and founder (freelance)</a></div><span>2019 – Now</span></li>
-      <li><div><a href="https://www.instagram.com/devoura.digital">Devoura, video editor</a></div><span>2026</span></li>
-      <li><div><a href="https://www.instagram.com/sadiq.store.sy">Sadiq Store App, video editor</a></div><span>2026</span></li>
-      <li><div><a href="https://www.instagram.com/awacyber_technology">AWA Cyber, graphic designer</a></div><span>2025 – 2026</span></li>
+<div class="orbit-callouts" id="callouts" aria-hidden="true"></div>
+<div class="scroll-hint" id="hint"><i></i>Scroll</div>
+
+<main class="after">
+  <div class="marquee" aria-hidden="true"><div>
+    <span>Brand Identity</span><span>Social Media Design</span><span>Motion Graphics</span><span>Art Direction</span><span>Video Editing</span><span>Packaging</span>
+    <span>Brand Identity</span><span>Social Media Design</span><span>Motion Graphics</span><span>Art Direction</span><span>Video Editing</span><span>Packaging</span>
+  </div></div>
+  <div class="inner">
+    <section id="work">
+      <h2>Selected Work</h2>
+      <p class="lead">Brand identities, campaigns and posters for clients across food, finance, logistics, legal services and technology. Tap any piece to enlarge it.</p>
+      <div class="filters" role="group" aria-label="Filter works">
+        <button type="button" data-f="all" aria-pressed="true">All</button>
+        <button type="button" data-f="identity" aria-pressed="false">Identity &amp; Logos</button>
+        <button type="button" data-f="campaigns" aria-pressed="false">Campaigns</button>
+        <button type="button" data-f="posters" aria-pressed="false">Posters</button>
+      </div>
+      <div class="gallery" id="gallery"></div>
+      <button class="more" id="more" type="button">Show more work</button>
+    </section>
+
+    <section id="about">
+      <h2>What I Do</h2>
+      <p class="lead">Graphic designer and art director with 6+ years across food and beverage, legal services, technology, interior design and business consulting. I keep every logo, post and reel part of one consistent visual story.</p>
+      <div class="stats">
+        <div class="stat"><b>6+</b><span>years of experience</span></div>
+        <div class="stat"><b>5</b><span>countries served: Syria, UAE, Saudi Arabia, India, Oman</span></div>
+        <div class="stat"><b>16</b><span>brands and teams</span></div>
+        <div class="stat"><b>1,100+</b><span>followers on Instagram</span></div>
+      </div>
+      <div class="skills">
+        <div><h3>Design</h3><p>Brand identity, logos, social media, packaging, print, menus, infographics and color correction.</p></div>
+        <div><h3>Video and Motion</h3><p>Video editing, motion graphics and short-form content for social media.</p></div>
+        <div><h3>Software</h3><p>Photoshop, Illustrator, InDesign, Premiere Pro, After Effects, Animate, DaVinci Resolve.</p></div>
+        <div><h3>Languages</h3><p>Arabic (native) and English (professional working proficiency).</p></div>
+      </div>
+      <img class="cover" src="cover-banner.jpg" alt="Mr_Thayer Graphic Design cover" loading="lazy" width="1584" height="396">
+    </section>
+
+    <section id="experience">
+      <h2>Experience</h2>
+      <p class="lead">Several roles were held in parallel on a part-time basis. Tap a client to see their Instagram.</p>
+      <ul class="list">
+      <li><div><a href="https://www.instagram.com/mr_thayer">Mr Thayer, art director and founder (freelance)</a><small>Personal design brand: identity, logos, social media, color correction and video. Art director since 2025.</small></div><span>2019 – Now</span></li>
+      <li><div><a href="https://www.instagram.com/devoura.digital">Devoura, video editor</a><small>Marketing reels, ads and brand-introduction videos.</small></div><span>2026</span></li>
+      <li><div><a href="https://www.instagram.com/sadiq.store.sy">Sadiq Store App, video editor</a><small>Short-form video content to promote the app and its store.</small></div><span>2026</span></li>
+      <li><div><a href="https://www.instagram.com/awacyber_technology">AWA Cyber, graphic designer</a><small>Turned the company vision into on-brand social visuals, graphics and short videos.</small></div><span>2025 – 2026</span></li>
       <li><div><a href="https://www.instagram.com/futureskillsoman">Future Skills Academy (Oman)</a></div><span>2025 – 2026</span></li>
       <li><div>Uncle Sami Restaurant</div><span>2022 – 2025</span></li>
       <li><div><a href="https://www.instagram.com/instantpoa">Instant POA (UAE)</a></div><span>2021 – 2025</span></li>
@@ -218,361 +307,72 @@ dialog img { max-width: 94vw; max-height: 90vh; display: block; }
       <li><div><a href="https://www.instagram.com/digitlupgrade">Digital Upgrade</a></div><span>2021 – 2023</span></li>
       <li><div><a href="https://www.instagram.com/halwanji_sweets">Halawanji Sweets</a></div><span>2020 – 2023</span></li>
       <li><div><a href="https://www.instagram.com/fatoorahsa">Fatoorah, poster design team</a></div><span>2020 – 2022</span></li>
-    </ul>
-  </section>
-  <section id="certs">
-    <h2>Education</h2>
-    <ul class="list">
-      <li><div><a href="https://www.credly.com/badges/cae85025-f253-458e-8c43-1ddae631e477">Adobe Graphic Designer Professional Certificate</a></div><span>2025</span></li>
-      <li><div>Speak English Professionally, Georgia Institute of Technology</div><span>2025</span></li>
-      <li><div>The Microsoft 365 Ecosystem, Microsoft</div><span>2025</span></li>
-      <li><div>Learning How to Learn, with honors</div><span>2025</span></li>
-      <li><div>University of Homs, Mechanical Engineering</div><span>From 2016</span></li>
-    </ul>
-  </section>
-  <section id="contact">
-    <h2>Let's Work Together</h2>
-    <p class="lead">Open to remote work. Send me a message about your project.</p>
-    <a class="big-mail" href="mailto:gafaraboshamiii@gmail.com">gafaraboshamiii@gmail.com</a>
-    <div class="links">
-      <a href="https://www.behance.net/thayeraboshami">Behance</a>
-      <a href="https://www.instagram.com/mr_thayer">Instagram</a>
-      <a href="https://www.linkedin.com/in/jafar-aboshami-b549a537a">LinkedIn</a>
-      <a href="https://wa.me/963959062527">WhatsApp</a>
-      <a href="cv.pdf">Download CV</a>
-    </div>
-  </section>
-  <footer><img class="footer-logo" src="logo.png" alt="Mr Thayer">© 2026 Jafar Abo Shami, Mr Thayer</footer>
-</div></main>
-<dialog id="dlg"><img id="big" alt=""></dialog>
+      </ul>
+    </section>
 
+    <section id="certs">
+      <h2>Education</h2>
+      <ul class="list">
+        <li><div><a href="https://www.credly.com/badges/cae85025-f253-458e-8c43-1ddae631e477">Adobe Graphic Designer Professional Certificate</a></div><span>2025</span></li>
+        <li><div>Speak English Professionally, Georgia Institute of Technology</div><span>2025</span></li>
+        <li><div>The Microsoft 365 Ecosystem, Microsoft</div><span>2025</span></li>
+        <li><div>Learning How to Learn, with honors</div><span>2025</span></li>
+        <li><div>University of Homs, Mechanical Engineering</div><span>From 2016</span></li>
+      </ul>
+    </section>
 
-<script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    <section id="contact">
+      <h2>Let's Work Together</h2>
+      <p class="lead">Open to remote work. Send me a message about your project and let's build its visual story.</p>
+      <a class="big-mail" href="mailto:gafaraboshamiii@gmail.com">gafaraboshamiii@gmail.com</a>
+      <div class="links">
+        <a href="https://www.behance.net/thayeraboshami">Behance</a>
+        <a href="https://www.instagram.com/mr_thayer">Instagram</a>
+        <a href="https://www.linkedin.com/in/jafar-aboshami-b549a537a">LinkedIn</a>
+        <a href="https://wa.me/963959062527">WhatsApp</a>
+        <a href="cv.pdf">Download CV</a>
+      </div>
+      <a class="cta" href="mailto:gafaraboshamiii@gmail.com?subject=New%20project">Start a project</a>
+    </section>
 
-const MODEL_URL = 'dragon.glb';
-const canvas = document.querySelector('#webgl');
-let scene, camera, renderer, gltfModel, modelPivot, mixer;
-const clock = new THREE.Clock();
-let currentScroll = 0;
-let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
-let cursorX = innerWidth / 2, cursorY = innerHeight / 2;
-let outerCursorX = innerWidth / 2, outerCursorY = innerHeight / 2;
-let bgMaterial;
-const shaderUniforms = {
-  uTime: { value: 0 },
-  uResolution: { value: new THREE.Vector2(innerWidth, innerHeight) },
-  uMouse: { value: new THREE.Vector2(0, 0) },
-  uScroll: { value: 0 }
-};
-let sparkParticles;
-const sparkCount = 450;
-const sparkData = [];
-const sizes = { width: innerWidth, height: innerHeight };
+    <footer>
+      <img class="footer-logo" src="logo.png" alt="Mr Thayer">
+      <div>© 2026 Jafar Abo Shami, Mr Thayer. All rights reserved.</div>
+      <div>3D model: "Tarisland - Dragon (High Poly)" by <a href="https://sketchfab.com/doctorA">Doctor A.</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, via <a href="https://sketchfab.com/3d-models/tarisland-dragon-high-poly-ecf63885166c40e2bbbcdf11cd14e65f">Sketchfab</a>.</div>
+    </footer>
+  </div>
+</main>
 
-function createSparkTexture() {
-  const c = document.createElement('canvas'); c.width = 16; c.height = 16;
-  const ctx = c.getContext('2d');
-  const g = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-  g.addColorStop(0, 'rgba(255,255,255,1)');
-  g.addColorStop(0.25, 'rgba(255,255,255,0.85)');
-  g.addColorStop(0.6, 'rgba(255,255,255,0.3)');
-  g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, 16, 16);
-  return new THREE.CanvasTexture(c);
-}
+<dialog id="dlg"><div class="lb"><img id="big" alt=""><p id="cap"></p><div class="lb-bar"><button type="button" id="prev">Previous</button><button type="button" id="close">Close</button><button type="button" id="next">Next</button></div></div></dialog>
 
-function createSparks() {
-  const geometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(sparkCount * 3);
-  const colors = new Float32Array(sparkCount * 3);
-  for (let i = 0; i < sparkCount; i++) {
-    positions[i*3] = (Math.random() - 0.5) * 6.5;
-    positions[i*3+1] = (Math.random() - 0.5) * 5.0 - 0.5;
-    positions[i*3+2] = (Math.random() - 0.5) * 6.5;
-    if (Math.random() < 0.6) {
-      colors[i*3] = 0.62 + Math.random() * 0.12; colors[i*3+1] = 0.30 + Math.random() * 0.1; colors[i*3+2] = 0.88 + Math.random() * 0.1;
-    } else {
-      colors[i*3] = 1.0; colors[i*3+1] = 0.10 + Math.random() * 0.1; colors[i*3+2] = 0.05 + Math.random() * 0.08;
-    }
-    sparkData.push({
-      speedX: (Math.random() - 0.5) * 0.4, speedY: 0.15 + Math.random() * 0.3, speedZ: (Math.random() - 0.5) * 0.4,
-      swaySpeed: 0.5 + Math.random() * 1.5, swayRadius: 0.05 + Math.random() * 0.15, phase: Math.random() * Math.PI * 2
-    });
+<script src="ui.js"></script>
+<script>
+/* Loads three.js from the first CDN that answers, then starts the 3D scene.
+   If every CDN is blocked the page still works and shows a message. */
+(async function () {
+  const MT = window.MT || { status: function () {} };
+  const bases = ['https://unpkg.com/three@0.160.0', 'https://cdn.jsdelivr.net/npm/three@0.160.0'];
+  let base = null;
+  for (const b of bases) {
+    try {
+      const ctl = new AbortController(); const t = setTimeout(function () { ctl.abort(); }, 7000);
+      const r = await fetch(b + '/build/three.module.js', { method: 'HEAD', signal: ctl.signal });
+      clearTimeout(t);
+      if (r.ok) { base = b; break; }
+    } catch (e) {}
   }
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  const material = new THREE.PointsMaterial({ size: 0.025, vertexColors: true, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, map: createSparkTexture() });
-  sparkParticles = new THREE.Points(geometry, material);
-  scene.add(sparkParticles);
-}
-
-function loadModel() {
-  new GLTFLoader().load(MODEL_URL, (gltf) => {
-    gltfModel = gltf.scene;
-    modelPivot = new THREE.Group();
-    scene.add(modelPivot);
-    modelPivot.add(gltfModel);
-    gltfModel.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true; child.receiveShadow = true;
-        const mats = Array.isArray(child.material) ? child.material : [child.material];
-        mats.forEach((m) => {
-          if (!m || m.name === 'EYES') return;
-          m.roughness = 0.42; m.metalness = 0.92; m.flatShading = false;
-          if (m.map) m.map.anisotropy = 16;
-        });
-      }
-    });
-    if (gltf.animations && gltf.animations.length > 0) {
-      mixer = new THREE.AnimationMixer(gltfModel);
-      gltf.animations.forEach((clip) => mixer.clipAction(clip).play());
-    }
-    const boxInitial = new THREE.Box3().setFromObject(gltfModel);
-    const sizeInitial = boxInitial.getSize(new THREE.Vector3());
-    const maxDim = Math.max(sizeInitial.x, sizeInitial.y, sizeInitial.z);
-    gltfModel.scale.setScalar(3.5 / (maxDim > 0.0001 ? maxDim : 1));
-    gltfModel.updateMatrixWorld(true);
-    const centerScaled = new THREE.Box3().setFromObject(gltfModel).getCenter(new THREE.Vector3());
-    gltfModel.position.sub(centerScaled);
-    modelPivot.position.y = -0.4;
-  }, undefined, (e) => console.error('Error loading model:', e));
-}
-
-function createBackgroundShader() {
-  const vertexShader = `
-    varying vec2 vUv;
-    void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
-  `;
-  const fragmentShader = `
-    varying vec2 vUv;
-    uniform float uTime; uniform vec2 uResolution; uniform vec2 uMouse; uniform float uScroll;
-    void main() {
-      vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution.xy) / uResolution.y;
-      float aspect = uResolution.x / uResolution.y;
-      float time = uTime * 0.08;
-      float scroll = uScroll;
-      float angle1 = 0.6; float angle2 = -0.7; float angle3 = 1.2;
-      float freq1 = 2.4; float freq2 = 3.2; float freq3 = 4.0;
-      vec2 warpedUv = uv;
-      float scrollDeform = scroll * 5.0;
-      warpedUv.x += sin(uv.y * 2.5 + time * 0.2 + scrollDeform) * 0.35;
-      warpedUv.y += cos(uv.x * 2.5 - time * 0.15 - scrollDeform * 0.8) * 0.35;
-      warpedUv.x += sin(uv.y * 1.2 - time * 0.1 - scrollDeform * 1.5) * 0.25;
-      warpedUv.y += cos(uv.x * 1.2 + time * 0.18 + scrollDeform * 1.2) * 0.25;
-      vec2 scrollDrift = vec2(scroll * 0.04, -scroll * 0.02);
-      vec2 mouseShift = vec2(uMouse.x * aspect * 0.05, uMouse.y * 0.05);
-      warpedUv += scrollDrift + mouseShift;
-      vec2 dir1 = vec2(cos(angle1), sin(angle1));
-      vec2 dir2 = vec2(cos(angle2), sin(angle2));
-      vec2 dir3 = vec2(cos(angle3), sin(angle3));
-      float w1 = sin(dot(warpedUv, dir1) * freq1 + time * 1.0);
-      float w2 = cos(dot(warpedUv, dir2) * freq2 - time * 1.4 + w1 * 0.4);
-      float w3 = sin(dot(warpedUv, dir3) * freq3 + time * 1.8 + w2 * 0.5);
-      float waveField = w1 * 0.50 + w2 * 0.35 + w3 * 0.15;
-      float wideSheen = pow(max(0.0, 1.0 - abs(waveField - 0.1)), 2.5);
-      float crispSpecular = pow(max(0.0, 1.0 - abs(waveField - 0.15)), 8.0);
-      float crest = wideSheen * 0.5 + crispSpecular * 0.9;
-      vec3 c0_shadow = vec3(0.027, 0.043, 0.141);
-      vec3 c0_wave1  = vec3(0.075, 0.085, 0.250);
-      vec3 c0_wave2  = vec3(0.045, 0.060, 0.190);
-      vec3 c0_crest  = vec3(0.30, 0.15, 0.52);
-      vec3 c1_shadow = vec3(0.027, 0.043, 0.141);
-      vec3 c1_wave1  = vec3(0.110, 0.050, 0.200);
-      vec3 c1_wave2  = vec3(0.070, 0.045, 0.165);
-      vec3 c1_crest  = vec3(0.50, 0.09, 0.12);
-      float t = smoothstep(0.0, 1.0, scroll);
-      vec3 colShadow = mix(c0_shadow, c1_shadow, t);
-      vec3 colWave1  = mix(c0_wave1, c1_wave1, t);
-      vec3 colWave2  = mix(c0_wave2, c1_wave2, t);
-      vec3 colCrest  = mix(c0_crest, c1_crest, t);
-      vec3 color = colShadow;
-      color = mix(color, colWave2, smoothstep(-0.6, 0.2, waveField));
-      color = mix(color, colWave1, smoothstep(0.0, 0.8, waveField));
-      color += colCrest * crest * 1.4;
-      float vignette = 1.0 - dot(uv, uv) * 0.12;
-      color *= vignette;
-      gl_FragColor = vec4(color, 1.0);
-    }
-  `;
-  bgMaterial = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms: shaderUniforms, depthWrite: false, depthTest: false });
-  const bgMesh = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), bgMaterial);
-  bgMesh.position.set(0.0, 0.0, -8.0);
-  bgMesh.renderOrder = -10;
-  camera.add(bgMesh);
-}
-
-function onWindowResize() {
-  sizes.width = innerWidth; sizes.height = innerHeight;
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  shaderUniforms.uResolution.value.set(sizes.width, sizes.height);
-}
-
-function splitTitlesIntoChars() {
-  document.querySelectorAll('.slide-title').forEach(title => {
-    let html = '', n = 0;
-    title.innerHTML.split(/(<br\s*\/?>)/i).forEach(part => {
-      if (part.toLowerCase().startsWith('<br')) { html += part; return; }
-      for (const ch of part) {
-        if (ch === ' ') html += ' ';
-        else { html += `<span class="char" style="transition-delay: ${n * 0.035}s">${ch}</span>`; n++; }
-      }
-    });
-    title.innerHTML = html;
-  });
-}
-
-function updateGridDots(scroll) {
-  document.querySelectorAll('.grid-dot').forEach((dot, i) => {
-    const startY = (i * 17) % 80 + 10;
-    let speed = 90 + (i * 55) % 180;
-    if (i % 2 === 0) speed = -speed;
-    let y = startY + scroll * speed;
-    y = ((y % 100) + 100) % 100;
-    dot.style.top = `${y}%`;
-  });
-}
-
-function updateSlides(scroll) {
-  const s = (id) => document.getElementById(id);
-  for (let i = 1; i <= 4; i++) {
-    const fill = s(`dash-fill-${i}`);
-    if (fill) {
-      const start = (i - 1) * 0.25, end = i * 0.25;
-      const p = Math.max(0, Math.min(1, (scroll - start) / (end - start)));
-      fill.style.height = `${p * 100}%`;
-    }
-  }
-  const on = (v, a, b) => v >= a && v <= b;
-  s('slide-1').classList.toggle('active', on(scroll, -0.10, 0.12));
-  const a2 = on(scroll, 0.28, 0.40);
-  s('slide-2').classList.toggle('active', a2);
-  s('slide-2-img').classList.toggle('active', a2);
-  s('slide-3').classList.toggle('active', on(scroll, 0.56, 0.68));
-  s('slide-4').classList.toggle('active', on(scroll, 0.84, 1.05));
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  const dt = clock.getDelta();
-  if (mixer) mixer.update(dt);
-
-  const maxScroll = document.getElementById('stage').offsetHeight - innerHeight;
-  const targetScroll = maxScroll > 0 ? Math.min(1, Math.max(0, scrollY / maxScroll)) : 0;
-  currentScroll += (targetScroll - currentScroll) * 0.025;
-  mouseX += (targetMouseX - mouseX) * 0.05;
-  mouseY += (targetMouseY - mouseY) * 0.05;
-  outerCursorX += (cursorX - outerCursorX) * 0.2;
-  outerCursorY += (cursorY - outerCursorY) * 0.2;
-  const co = document.querySelector('.cursor-outer');
-  if (co) { co.style.left = `${outerCursorX}px`; co.style.top = `${outerCursorY}px`; }
-
-  if (modelPivot) { modelPivot.rotation.y = mouseX * 0.25; modelPivot.rotation.x = mouseY * 0.15; }
-
-  if (sparkParticles) {
-    const pos = sparkParticles.geometry.attributes.position.array;
-    const time = clock.getElapsedTime();
-    const vel = Math.abs(targetScroll - currentScroll);
-    const mult = 1.0 + vel * 9.0;
-    const turb = vel * 0.8;
-    for (let i = 0; i < sparkCount; i++) {
-      const k = i * 3, d = sparkData[i];
-      pos[k] += d.speedX * dt * mult; pos[k+1] += d.speedY * dt * mult; pos[k+2] += d.speedZ * dt * mult;
-      const sway = d.swayRadius * (1.0 + turb * 4.0);
-      pos[k] += Math.sin(time * d.swaySpeed + d.phase) * sway * dt;
-      pos[k+2] += Math.cos(time * d.swaySpeed + d.phase) * sway * dt;
-      if (pos[k+1] > 3.0 || Math.abs(pos[k]) > 3.5 || Math.abs(pos[k+2]) > 3.5) {
-        pos[k+1] = -2.5; pos[k] = (Math.random() - 0.5) * 3.0; pos[k+2] = (Math.random() - 0.5) * 3.0;
-      }
-    }
-    sparkParticles.geometry.attributes.position.needsUpdate = true;
-  }
-
-  const phi = currentScroll * Math.PI * 2.0;
-  const y = 0.35 + Math.sin(currentScroll * Math.PI) * 0.8;
-  const radius = 4.2 - Math.sin(currentScroll * Math.PI) * 0.6;
-  const x = radius * Math.sin(phi), z = radius * Math.cos(phi);
-  const tp = Math.min(1.0, currentScroll / 0.28);
-  const ease = (Math.cos(tp * Math.PI) + 1.0) * 0.5;
-  const lookAtX = innerWidth > 900 ? -0.9 * ease : 0;
-  camera.position.lerp(new THREE.Vector3(x, y, z), 0.025);
-  camera.lookAt(new THREE.Vector3(lookAtX, -0.15, 0));
-
-  shaderUniforms.uTime.value = clock.getElapsedTime();
-  shaderUniforms.uMouse.value.set(mouseX, -mouseY);
-  shaderUniforms.uScroll.value = currentScroll;
-
-  updateSlides(currentScroll);
-  updateGridDots(currentScroll);
-  renderer.render(scene, camera);
-}
-
-function setupNavigation() {
-  const targets = [0.0, 0.34, 0.62, 0.94];
-  document.querySelectorAll('.nav-link').forEach((link, i) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (i === 3) { document.getElementById('work').scrollIntoView({ behavior: 'smooth' }); return; }
-      const max = document.getElementById('stage').offsetHeight - innerHeight;
-      window.scrollTo({ top: max * targets[i], behavior: 'smooth' });
-    });
-  });
-}
-
-window.addEventListener('mousemove', (e) => {
-  cursorX = e.clientX; cursorY = e.clientY;
-  const ci = document.querySelector('.cursor-inner');
-  if (ci) { ci.style.left = `${cursorX}px`; ci.style.top = `${cursorY}px`; }
-  targetMouseX = (e.clientX / innerWidth) * 2 - 1;
-  targetMouseY = (e.clientY / innerHeight) * 2 - 1;
-});
-window.addEventListener('resize', onWindowResize);
-const dlg = document.getElementById('dlg'), bigImg = document.getElementById('big');
-document.getElementById('gallery').addEventListener('click', (e) => {
-  const im = e.target.closest('figure')?.querySelector('img');
-  if (im) { bigImg.src = im.src; bigImg.alt = im.alt; dlg.showModal(); }
-});
-dlg.addEventListener('click', () => dlg.close());
-
-window.addEventListener('DOMContentLoaded', () => {
-  splitTitlesIntoChars();
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color('#070b24');
-  scene.fog = new THREE.FogExp2('#070b24', 0.01);
-  camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 100);
-  camera.position.set(0, 0.2, 3.0);
-  scene.add(camera);
-  createBackgroundShader();
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 2.2;
-
-  scene.add(new THREE.AmbientLight('#ffffff', 0.1));
-  const keyLight = new THREE.SpotLight('#ffffff', 18.0);
-  keyLight.position.set(4, 6, 3);
-  keyLight.angle = Math.PI / 4; keyLight.penumbra = 0.9; keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(2048, 2048);
-  keyLight.shadow.camera.near = 1.0; keyLight.shadow.camera.far = 15; keyLight.shadow.bias = -0.001;
-  scene.add(keyLight);
-  const rimLight = new THREE.DirectionalLight('#b996ff', 10.0);
-  rimLight.position.set(-5, 3, -4); scene.add(rimLight);
-  const fillLight = new THREE.DirectionalLight('#fff3e6', 0.8);
-  fillLight.position.set(-2, -4, 2); scene.add(fillLight);
-
-  createSparks();
-  loadModel();
-  onWindowResize();
-  animate();
-  setupNavigation();
-});
+  if (!base) { MT.status('The 3D engine could not be downloaded (network blocked?). The rest of the site works.', true); return; }
+  const m = document.createElement('script'); m.type = 'importmap';
+  m.textContent = JSON.stringify({ imports: {
+    'three': base + '/build/three.module.js',
+    'three/examples/jsm/loaders/GLTFLoader.js': base + '/examples/jsm/loaders/GLTFLoader.js',
+    'three/examples/jsm/libs/meshopt_decoder.module.js': base + '/examples/jsm/libs/meshopt_decoder.module.js'
+  } });
+  document.head.appendChild(m);
+  try { await import('./scene.js'); }
+  catch (e) { console.error(e); MT.status('The 3D scene failed to start on this browser. The rest of the site works.', true); }
+})();
 </script>
+
 </body>
 </html>
