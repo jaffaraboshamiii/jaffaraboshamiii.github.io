@@ -272,6 +272,14 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
 .gsec .tile { margin: 0; }
 @media (max-width: 1100px) { .gsec:has(> .tile), .gsec > :not(.ghead):not(.tile) { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 700px) { .gsec:has(> .tile), .gsec > :not(.ghead):not(.tile) { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+/* ===== v5: keep only the right progress indicator + swipe-down arrow ===== */
+.grid-horizontal-line { display: none !important; }
+.grid-line:not(.story-progress-container) { display: none !important; }
+.grid-lines { justify-content: flex-end; }
+.story-progress-container::after { content: ""; position: absolute; left: 50%; bottom: 34px; width: 12px; height: 12px; margin-left: -6px; border-right: 2px solid #d9b8ff; border-bottom: 2px solid #d9b8ff; transform: rotate(45deg); animation: swipeArrow 1.6s ease-in-out infinite; transition: opacity .5s; filter: drop-shadow(0 0 6px rgba(165,82,226,.9)); }
+.story-progress-container.scrolled::after { opacity: 0; animation: none; }
+@keyframes swipeArrow { 0%, 100% { transform: translateY(-8px) rotate(45deg); opacity: .35; } 50% { transform: translateY(6px) rotate(45deg); opacity: 1; } }
+.scroll-hint { display: none !important; }
 </style>
 </head>
 <body>
@@ -468,5 +476,14 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
 })();
 </script>
 
+<script>
+/* hide the swipe-down arrow once the visitor starts scrolling */
+(function () {
+  var p = document.querySelector('.story-progress-container');
+  if (!p) return;
+  function f() { p.classList.toggle('scrolled', window.scrollY > 40); }
+  window.addEventListener('scroll', f, { passive: true }); f();
+})();
+</script>
 </body>
 </html>
