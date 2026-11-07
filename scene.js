@@ -223,7 +223,7 @@ function bonesCentre(out) {
 function makeFloorGlow() {
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-  gr.addColorStop(0, 'rgba(190,120,255,.85)'); gr.addColorStop(0.45, 'rgba(165,82,226,.35)'); gr.addColorStop(1, 'rgba(165,82,226,0)');
+  gr.addColorStop(0, 'rgba(165,82,226,.55)'); gr.addColorStop(0.4, 'rgba(165,82,226,.18)'); gr.addColorStop(0.75, 'rgba(165,82,226,.04)'); gr.addColorStop(1, 'rgba(165,82,226,0)');
   g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
   const m = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
   m.rotation.x = -Math.PI / 2; scene.add(m); return m;
@@ -295,7 +295,7 @@ function animate() {
     modelPivot.rotation.y = MT.mx * 0.12;                                  // gentle mouse tilt
     modelPivot.rotation.x = MT.my * 0.06;
     modelPivot.position.y = -0.2 + Math.sin(time * 0.8) * 0.015 * (1 - (MT.land || 0));
-    if (floorMesh) floorMesh.material.opacity = Math.max(0, ((MT.land || 0) - 0.4) / 0.6) * 0.9;
+    if (floorMesh) floorMesh.material.opacity = Math.pow(Math.max(0, ((MT.land || 0) - 0.6) / 0.4), 2) * 0.35;
     if (modelAlpha < 1) {
       modelAlpha = Math.min(1, modelAlpha + dt / 1.2);
       modelMats.forEach((m) => { m.opacity = modelAlpha; if (modelAlpha >= 1) { m.transparent = false; m.needsUpdate = true; } });

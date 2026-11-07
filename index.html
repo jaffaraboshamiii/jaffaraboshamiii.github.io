@@ -266,12 +266,12 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
 .snd { display: none !important; }
 /* 3) sections stay whole and ordered; tiles flow in a grid inside each section */
 #gallery, .gallery.gsecs { column-count: 1 !important; columns: auto !important; display: block !important; }
-.gsec { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; break-inside: avoid; }
-.gsec > .ghead { grid-column: 1 / -1; }
-.gsec > :not(.ghead):not(.tile) { display: contents; }
+.gsec { display: block; }
+.gsec:has(> .tile), .gsec > :not(.ghead):not(.tile) { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
+.gsec > .ghead { display: flex; }
 .gsec .tile { margin: 0; }
-@media (max-width: 1100px) { .gsec { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 700px) { .gsec { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+@media (max-width: 1100px) { .gsec:has(> .tile), .gsec > :not(.ghead):not(.tile) { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px) { .gsec:has(> .tile), .gsec > :not(.ghead):not(.tile) { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
 </style>
 </head>
 <body>
@@ -468,18 +468,5 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
 })();
 </script>
 
-<script>
-/* Background music: always on. Starts at the first tap/click/scroll (browsers require a gesture)
-   and is re-started on any later gesture if it ever stops. The sound button is hidden. */
-(function () {
-  var evs = ['pointerdown', 'touchstart', 'click', 'keydown', 'wheel'];
-  function kick() {
-    var b = document.querySelector('.snd');
-    if (b && !b.classList.contains('on')) b.click();
-  }
-  evs.forEach(function (e) { window.addEventListener(e, function () { setTimeout(kick, 0); }, { passive: true }); });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(kick, 300); });
-})();
-</script>
 </body>
 </html>
