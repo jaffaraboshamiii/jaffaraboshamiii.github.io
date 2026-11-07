@@ -1,8 +1,8 @@
 (function () {
 'use strict';
-const WORKS = [{"file": "poster-chess-crown.jpg", "title": "Stunning graphic solutions", "cat": "posters", "sq": false}, {"file": "brand-aetheria.jpg", "title": "Aetheria identity", "cat": "identity", "sq": true}, {"file": "poster-loyalty-chess.jpg", "title": "Build strong customer loyalty", "cat": "posters", "sq": false}, {"file": "brand-cyto.jpg", "title": "Cyto Gurus logo", "cat": "identity", "sq": true}, {"file": "poster-creativity-redhat.jpg", "title": "Creativity", "cat": "posters", "sq": false}, {"file": "brand-void.jpg", "title": "Void Art identity", "cat": "identity", "sq": true}, {"file": "poster-frame-girl.jpg", "title": "Elevate your brand", "cat": "posters", "sq": false}, {"file": "brand-naqaa.jpg", "title": "Naqaa logo", "cat": "identity", "sq": true}, {"file": "poster-cheetah-brand.jpg", "title": "Unique branding identity", "cat": "posters", "sq": false}, {"file": "brand-hookah.jpg", "title": "Al-Shaalan logo", "cat": "identity", "sq": true}, {"file": "poster-dartboard.jpg", "title": "Creative design captures attention", "cat": "posters", "sq": false}, {"file": "brand-law.jpg", "title": "Law office logo", "cat": "identity", "sq": true}, {"file": "poster-what-reminds.jpg", "title": "What does this remind you of?", "cat": "posters", "sq": false}, {"file": "poster-jumaa-calligraphy.jpg", "title": "Friday greeting, calligraphy", "cat": "campaigns", "sq": false}, {"file": "poster-jumaa-mosque.jpg", "title": "Friday greeting, mosque", "cat": "campaigns", "sq": false}, {"file": "poster-mario-colors.jpg", "title": "Design tips: color perception", "cat": "posters", "sq": false}, {"file": "poster-warrior-didyouknow.jpg", "title": "Design facts series", "cat": "posters", "sq": false}, {"file": "poster-client-lens.jpg", "title": "Design tips: the client lens", "cat": "posters", "sq": false}, {"file": "poster-quality-problem.jpg", "title": "Design tips: quality problem", "cat": "posters", "sq": false}, {"file": "poster-employee-touch.jpg", "title": "Design tips: the extra touch", "cat": "posters", "sq": false}, {"file": "camp-finance-moneybag.jpg", "title": "Finance campaign: extra money", "cat": "campaigns", "sq": false}, {"file": "camp-finance-phone.jpg", "title": "Finance campaign: mobile", "cat": "campaigns", "sq": false}, {"file": "camp-finance-piggy.jpg", "title": "Finance campaign: budget", "cat": "campaigns", "sq": false}, {"file": "camp-logistics-returns.jpg", "title": "Logistics campaign: returns", "cat": "campaigns", "sq": false}, {"file": "camp-logistics-handshake.jpg", "title": "Logistics campaign: punctuality", "cat": "campaigns", "sq": false}, {"file": "camp-logistics-truck.jpg", "title": "Logistics campaign: fleet", "cat": "campaigns", "sq": false}, {"file": "camp-amarelo-heart.jpg", "title": "Awareness campaign: ribbon", "cat": "campaigns", "sq": false}, {"file": "camp-amarelo-bubble.jpg", "title": "Awareness campaign: talk", "cat": "campaigns", "sq": false}, {"file": "camp-amarelo-sunflower.jpg", "title": "Awareness campaign: hope", "cat": "campaigns", "sq": false}, {"file": "camp-amarelo-smile.jpg", "title": "Awareness campaign: support", "cat": "campaigns", "sq": false}, {"file": "poster-nordestino-1.jpg", "title": "Regional day campaign", "cat": "campaigns", "sq": false}, {"file": "poster-nordestino-2.jpg", "title": "Regional day: family", "cat": "campaigns", "sq": false}, {"file": "camp-nordestino-3.jpg", "title": "Regional day: warmth", "cat": "campaigns", "sq": false}];
-const CALLOUTS = [["Brand identity with a point of view", "left", 38, 0.14, 0.27], ["Design that earns attention", "right", 58, 0.16, 0.27], ["Motion that gives ideas a pulse", "left", 60, 0.42, 0.55], ["Consistency across every channel", "right", 36, 0.43, 0.55], ["From first sketch to final launch", "left", 40, 0.7, 0.83], ["Six years. Five countries. One voice.", "right", 56, 0.71, 0.83]];
-const MT = window.MT = { scroll: 0, target: 0, mx: 0, my: 0, tmx: 0, tmy: 0 };
+const WORKS = [{"file": "poster-chess-crown.jpg", "title": "Stunning graphic solutions", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "brand-aetheria.jpg", "title": "Aetheria identity", "cat": "identity", "sq": true, "ar": 1.0}, {"file": "poster-loyalty-chess.jpg", "title": "Build strong customer loyalty", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "brand-cyto.jpg", "title": "Cyto Gurus logo", "cat": "identity", "sq": true, "ar": 1.0}, {"file": "poster-creativity-redhat.jpg", "title": "Creativity", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "brand-void.jpg", "title": "Void Art identity", "cat": "identity", "sq": true, "ar": 1.0}, {"file": "poster-frame-girl.jpg", "title": "Elevate your brand", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "brand-naqaa.jpg", "title": "Naqaa logo", "cat": "identity", "sq": true, "ar": 1.0}, {"file": "poster-cheetah-brand.jpg", "title": "Unique branding identity", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "brand-hookah.jpg", "title": "Al-Shaalan logo", "cat": "identity", "sq": true, "ar": 1.0}, {"file": "poster-dartboard.jpg", "title": "Creative design captures attention", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "brand-law.jpg", "title": "Law office logo", "cat": "identity", "sq": true, "ar": 1.0}, {"file": "poster-what-reminds.jpg", "title": "What does this remind you of?", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "poster-jumaa-calligraphy.jpg", "title": "Friday greeting, calligraphy", "cat": "campaigns", "sq": false, "ar": 0.8}, {"file": "poster-jumaa-mosque.jpg", "title": "Friday greeting, mosque", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "poster-mario-colors.jpg", "title": "Design tips: color perception", "cat": "posters", "sq": false, "ar": 0.8}, {"file": "poster-warrior-didyouknow.jpg", "title": "Design facts series", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "poster-client-lens.jpg", "title": "Design tips: the client lens", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "poster-quality-problem.jpg", "title": "Design tips: quality problem", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "poster-employee-touch.jpg", "title": "Design tips: the extra touch", "cat": "posters", "sq": false, "ar": 0.8006}, {"file": "camp-finance-moneybag.jpg", "title": "Finance campaign: extra money", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-finance-phone.jpg", "title": "Finance campaign: mobile", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-finance-piggy.jpg", "title": "Finance campaign: budget", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-logistics-returns.jpg", "title": "Logistics campaign: returns", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-logistics-handshake.jpg", "title": "Logistics campaign: punctuality", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-logistics-truck.jpg", "title": "Logistics campaign: fleet", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-amarelo-heart.jpg", "title": "Awareness campaign: ribbon", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-amarelo-bubble.jpg", "title": "Awareness campaign: talk", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-amarelo-sunflower.jpg", "title": "Awareness campaign: hope", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-amarelo-smile.jpg", "title": "Awareness campaign: support", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "poster-nordestino-1.jpg", "title": "Regional day campaign", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "poster-nordestino-2.jpg", "title": "Regional day: family", "cat": "campaigns", "sq": false, "ar": 0.8006}, {"file": "camp-nordestino-3.jpg", "title": "Regional day: warmth", "cat": "campaigns", "sq": false, "ar": 0.8006}];
+const CALLOUTS = [["Brand identity with a point of view", "left", 38, 0.19, 0.27], ["Design that earns attention", "right", 58, 0.2, 0.27], ["Motion that gives ideas a pulse", "left", 60, 0.48, 0.56], ["Consistency across every channel", "right", 36, 0.49, 0.56], ["From first sketch to final launch", "left", 40, 0.77, 0.84], ["Six years. Five countries. One voice.", "right", 56, 0.78, 0.84]];
+const MT = window.MT = { scroll: 0, target: 0, vel: 0, mx: 0, my: 0, tmx: 0, tmy: 0 };
 const stage = document.getElementById('stage');
 const isTouch = matchMedia('(pointer: coarse)').matches;
 
@@ -31,24 +31,25 @@ function updateGridDots(scroll) {
   });
 }
 
-function updateSlides(scroll) {
-  const s = (id) => document.getElementById(id);
+function updateSlides(s) {
+  const bounds = [0, 0.28, 0.57, 0.85, 1];
   for (let i = 1; i <= 4; i++) {
-    const fill = s(`dash-fill-${i}`);
-    if (fill) {
-      const start = (i - 1) * 0.25, end = i * 0.25;
-      const p = Math.max(0, Math.min(1, (scroll - start) / (end - start)));
-      fill.style.height = `${p * 100}%`;
-    }
+    const fill = document.getElementById('dash-fill-' + i);
+    if (fill) fill.style.height = (Math.max(0, Math.min(1, (s - bounds[i - 1]) / (bounds[i] - bounds[i - 1]))) * 100) + '%';
   }
   const on = (v, a, b) => v >= a && v <= b;
-  s('slide-1').classList.toggle('active', on(scroll, -0.10, 0.12));
-  const a2 = on(scroll, 0.28, 0.40);
-  s('slide-2').classList.toggle('active', a2);
-  s('slide-2-img').classList.toggle('active', a2);
-  s('slide-3').classList.toggle('active', on(scroll, 0.56, 0.68));
-  s('slide-4').classList.toggle('active', on(scroll, 0.84, 1.05));
+  document.getElementById('slide-1').classList.toggle('active', on(s, -0.1, 0.09));
+  document.getElementById('slide-2').classList.toggle('active', on(s, 0.30, 0.38));
+  document.getElementById('slide-3').classList.toggle('active', on(s, 0.59, 0.67));
+  document.getElementById('slide-4').classList.toggle('active', on(s, 0.87, 1.05));
 }
+
+/* reveal-on-scroll for headings, glass cards, highlights and gallery tiles */
+const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => {
+  es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }) : null;
+function reveal(el, delay) { if (!io) { el.classList.add('in'); return; } if (delay) el.style.transitionDelay = delay + 'ms'; io.observe(el); }
+document.querySelectorAll('.rv, .hl').forEach((el) => reveal(el, 0));
 
 /* ---------- status pill (3D loading / errors) ---------- */
 const statusEl = document.getElementById('status');
@@ -72,8 +73,9 @@ const callEls = [];
 
 /* ---------- gallery ---------- */
 const grid = document.getElementById('gallery'), moreBtn = document.getElementById('more');
-const dlg = document.getElementById('dlg'), bigImg = document.getElementById('big'), capEl = document.getElementById('cap');
-const labels = { identity: 'Identity', campaigns: 'Campaign', posters: 'Poster' };
+const dlg = document.getElementById('dlg'), bigImg = document.getElementById('big');
+const capEl = document.getElementById('cap'), catEl = document.getElementById('cat'), cntEl = document.getElementById('cnt');
+const labels = { identity: 'Identity & Logos', campaigns: 'Campaign', posters: 'Poster' };
 let filter = 'all', shown = 12, cur = 0;
 const listWorks = () => WORKS.filter((w) => filter === 'all' || w.cat === filter);
 function renderGallery() {
@@ -81,7 +83,7 @@ function renderGallery() {
   grid.textContent = '';
   items.slice(0, shown).forEach((w, i) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'tile' + (w.sq ? ' sq' : ''); b.setAttribute('aria-label', w.title);
+    b.type = 'button'; b.className = 'tile rv'; b.style.setProperty('--ar', w.ar); b.setAttribute('aria-label', w.title);
     const img = document.createElement('img');
     img.src = w.file; img.alt = w.title; img.loading = 'lazy'; img.decoding = 'async'; img.onerror = () => b.remove();
     const cap = document.createElement('span'); cap.className = 'cap';
@@ -89,20 +91,23 @@ function renderGallery() {
     cap.append(sm, document.createTextNode(w.title));
     b.append(img, cap);
     b.addEventListener('click', () => openBox(i));
-    grid.appendChild(b);
+    grid.appendChild(b); reveal(b, (i % 4) * 90);
   });
   moreBtn.hidden = items.length <= shown;
 }
 function showBox(i) {
   const items = listWorks();
   cur = (i + items.length) % items.length;
-  bigImg.src = items[cur].file; bigImg.alt = items[cur].title; capEl.textContent = items[cur].title;
+  bigImg.classList.remove('swap'); void bigImg.offsetWidth; bigImg.classList.add('swap');
+  bigImg.src = items[cur].file; bigImg.alt = items[cur].title;
+  capEl.textContent = items[cur].title; catEl.textContent = labels[items[cur].cat];
+  cntEl.textContent = String(cur + 1).padStart(2, '0') + ' / ' + String(items.length).padStart(2, '0');
 }
 function openBox(i) { showBox(i); dlg.showModal(); }
-document.getElementById('prev').addEventListener('click', () => showBox(cur - 1));
-document.getElementById('next').addEventListener('click', () => showBox(cur + 1));
+document.getElementById('prev').addEventListener('click', (e) => { e.stopPropagation(); showBox(cur - 1); });
+document.getElementById('next').addEventListener('click', (e) => { e.stopPropagation(); showBox(cur + 1); });
 document.getElementById('close').addEventListener('click', () => dlg.close());
-dlg.addEventListener('click', (e) => { if (!e.target.closest('img,button,p')) dlg.close(); });
+dlg.addEventListener('click', (e) => { if (!e.target.closest('img,button,figcaption')) dlg.close(); });
 window.addEventListener('keydown', (e) => {
   if (!dlg.open) return;
   if (e.key === 'ArrowRight') showBox(cur + 1);
@@ -121,7 +126,7 @@ renderGallery();
 
 /* ---------- navigation ---------- */
 (function () {
-  const targets = [0.0, 0.34, 0.62];
+  const targets = [0.0, 0.33, 0.62];
   document.querySelectorAll('.nav-link').forEach((link, i) => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -224,12 +229,13 @@ function loop() {
   MT.scroll += (MT.target - MT.scroll) * 0.025;
   MT.mx += (MT.tmx - MT.mx) * 0.05;
   MT.my += (MT.tmy - MT.my) * 0.05;
-  vel += (Math.abs(scrollY - lastY) - vel) * 0.2; lastY = scrollY;
+  vel += (Math.abs(scrollY - lastY) - vel) * 0.2; lastY = scrollY; MT.vel = vel;
   outerX += (cursorX - outerX) * 0.2; outerY += (cursorY - outerY) * 0.2;
   if (curOut && !isTouch) { curOut.style.left = outerX + 'px'; curOut.style.top = outerY + 'px'; }
   updateSlides(MT.scroll);
   updateGridDots(MT.scroll);
-  callEls.forEach((c) => c.el.classList.toggle('active', MT.scroll >= c.a && MT.scroll <= c.b));
+  const landed = MT.land === undefined ? 1 : MT.land;   // side phrases only appear once the dragon has landed
+  callEls.forEach((c) => c.el.classList.toggle('active', MT.scroll >= c.a && MT.scroll <= c.b && landed > 0.55));
   if (hint) hint.classList.toggle('gone', scrollY > 40);
   musicTick(vel);
 }

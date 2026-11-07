@@ -5,13 +5,12 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 const MT = window.MT;
 const MODEL_URL = 'dragon.glb';
 const isMobile = () => innerWidth < 900;
-const targetMaxDim = () => (isMobile() ? 2.1 : 2.6);   // dragon size: lower this number if it looks too big
+const targetMaxDim = () => (isMobile() ? 2.1 : 2.5);   // dragon size: lower this number if it looks too big
 const maxPixelRatio = () => (isMobile() ? 1.5 : 2);
 
 const canvas = document.querySelector('#webgl');
-let scene, camera, renderer;
-let gltfModel, modelPivot, spinGroup, skinned, mixer;
-let modelReady = false, modelAlpha = 0, frameCount = 0;
+let scene, camera, renderer, gltfModel, modelPivot, skinned, mixer, floorMesh;
+let modelReady = false, modelAlpha = 0, floorY = -1.2;
 const modelMats = [];
 const clock = new THREE.Clock();
 let bgMaterial;
@@ -135,7 +134,7 @@ function onWindowResize() {
   shaderUniforms.uResolution.value.set(sizes.width, sizes.height);
 }
 
-/* the clips in this file are cut from one long timeline, so shift a clip to start at 0 */
+/* the clips in this file are cut from one long timeline, so shift each clip to start at 0 */
 function normalizeClip(clip) {
   let t0 = Infinity;
   clip.tracks.forEach((t) => { if (t.times.length) t0 = Math.min(t0, t.times[0]); });
@@ -147,15 +146,87 @@ function normalizeClip(clip) {
   return clip;
 }
 
-const _v = new THREE.Vector3(), _mn = new THREE.Vector3(), _mx = new THREE.Vector3();
-function recenter(f) {
-  if (!skinned || !spinGroup) return;
+/* ======== dragon behaviour: it follows the scroll, never random ========
+   landed (stand)  ->  scroll into a flight zone  ->  take-off (up) -> flying (wings follow the scroll speed)
+   -> flight zone ends -> landing (down) -> landed again. Side phrases appear only once it has landed.
+   Scroll positions below are fractions of the whole stage. */
+const FLY_ZONES = [[0.09, 0.17], [0.38, 0.46], [0.67, 0.75]];
+const ROARS = [[0.305, 'attack01'], [0.595, 'attack02']];
+const acts = {}, wts = {};
+let state = 'stand', curRoar = 'attack01', flyT = 0, prevS = 0, canFly = false;
+const _v = new THREE.Vector3(), _mn = new THREE.Vector3(), _mx = new THREE.Vector3(), _inv = new THREE.Matrix4();
+let anchor = new THREE.Vector3();
+
+function startOnce(st, key) {
+  const a = acts[key]; if (!a) return;
+  a.reset(); a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.timeScale = 1; a.enabled = true; a.play();
+  state = st;
+}
+function setupAnimations(gltf) {
+  mixer = new THREE.AnimationMixer(gltfModel);
+  const defs = { stand: /_stand$/i, up: /_up$/i, fly: /_fly2$/i, down: /_down$/i, attack01: /_attack01$/i, attack02: /_attack02$/i };
+  for (const k in defs) {
+    const clip = gltf.animations.find((c) => defs[k].test(c.name));
+    if (!clip) continue;
+    const a = mixer.clipAction(normalizeClip(clip));
+    acts[k] = a; wts[k] = k === 'stand' ? 1 : 0;
+    a.setEffectiveWeight(wts[k]); a.play();
+  }
+  if (!acts.stand && gltf.animations[0]) {            // unknown file: just loop its first clip
+    acts.stand = mixer.clipAction(normalizeClip(gltf.animations[0])); wts.stand = 1; acts.stand.play();
+  }
+  canFly = !!(acts.fly && acts.up && acts.down);
+  if (acts.fly) acts.fly.timeScale = 0;               // flap time is driven by the scroll speed
+  mixer.addEventListener('finished', (e) => {
+    if (e.action === acts.up && state === 'up') state = 'fly';
+    else if (e.action === acts.down && state === 'down') state = 'stand';
+    else if (state === 'roar' && (e.action === acts.attack01 || e.action === acts.attack02)) state = 'stand';
+  });
+}
+function tickAnimation(dt, s) {
+  const inFly = canFly && FLY_ZONES.some(([a, b]) => s >= a && s < b);
+  if (inFly && (state === 'stand' || state === 'roar' || state === 'down')) startOnce('up', 'up');
+  else if (!inFly && (state === 'fly' || state === 'up')) startOnce('down', 'down');
+  else if (state === 'stand') {
+    for (const [at, key] of ROARS) if (acts[key] && prevS < at && s >= at) { curRoar = key; startOnce('roar', key); }
+  }
+  prevS = s;
+  if (acts.fly) {                                      // wings flap faster while you scroll, hover slowly when you stop
+    flyT += dt * (0.25 + Math.min(MT.vel / 18, 1) * 1.3);
+    acts.fly.time = flyT % acts.fly.getClip().duration;
+  }
+  const activeKey = state === 'roar' ? curRoar : state;
+  let sum = 0;
+  for (const k in acts) { wts[k] += ((k === activeKey ? 1 : 0) - wts[k]) * (1 - Math.exp(-dt * 6)); sum += wts[k]; }
+  for (const k in acts) acts[k].setEffectiveWeight(sum > 1e-4 ? wts[k] / sum : 0);
+  MT.land = sum > 1e-4 ? ((wts.stand || 0) + (wts.attack01 || 0) + (wts.attack02 || 0) + (wts.down || 0) * 0.5) / sum : 1;
+}
+/* keeps the dragon centred without jitter: low-pass follow of the skeleton centre, horizontal only */
+function followCentre(dt) {
+  if (!skinned) return;
+  modelPivot.updateMatrixWorld();
+  _inv.copy(modelPivot.matrixWorld).invert();
   _mn.set(1e9, 1e9, 1e9); _mx.set(-1e9, -1e9, -1e9);
-  for (const b of skinned.skeleton.bones) { b.getWorldPosition(_v); spinGroup.worldToLocal(_v); _mn.min(_v); _mx.max(_v); }
-  _mn.add(_mx).multiplyScalar(0.5);
-  gltfModel.position.x -= _mn.x * f;
-  gltfModel.position.y -= _mn.y * f;
-  gltfModel.position.z -= _mn.z * f;
+  for (const b of skinned.skeleton.bones) { _v.setFromMatrixPosition(b.matrixWorld).applyMatrix4(_inv); _mn.min(_v); _mx.max(_v); }
+  const k = 1 - Math.exp(-dt / 1.1);
+  gltfModel.position.x += (anchor.x - (_mn.x + _mx.x) / 2) * k;
+  gltfModel.position.z += (anchor.z - (_mn.z + _mx.z) / 2) * k;
+}
+function bonesCentre(out) {
+  modelPivot.updateMatrixWorld(true);
+  _inv.copy(modelPivot.matrixWorld).invert();
+  _mn.set(1e9, 1e9, 1e9); _mx.set(-1e9, -1e9, -1e9);
+  for (const b of skinned.skeleton.bones) { _v.setFromMatrixPosition(b.matrixWorld).applyMatrix4(_inv); _mn.min(_v); _mx.max(_v); }
+  return out.set((_mn.x + _mx.x) / 2, (_mn.y + _mx.y) / 2, (_mn.z + _mx.z) / 2);
+}
+
+function makeFloorGlow() {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(190,120,255,.85)'); gr.addColorStop(0.45, 'rgba(165,82,226,.35)'); gr.addColorStop(1, 'rgba(165,82,226,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  m.rotation.x = -Math.PI / 2; scene.add(m); return m;
 }
 
 function loadModel() {
@@ -164,59 +235,67 @@ function loadModel() {
   loader.load(MODEL_URL, (gltf) => {
     gltfModel = gltf.scene;
     modelPivot = new THREE.Group();
-    spinGroup = new THREE.Group();
-    scene.add(modelPivot); modelPivot.add(spinGroup); spinGroup.add(gltfModel);
-
+    scene.add(modelPivot); modelPivot.add(gltfModel);
     gltfModel.traverse((child) => {
       if (!child.isMesh) return;
-      child.castShadow = true; child.receiveShadow = true; child.frustumCulled = false;
+      child.frustumCulled = false;
       if (child.isSkinnedMesh && !skinned) skinned = child;
       (Array.isArray(child.material) ? child.material : [child.material]).forEach((m) => {
         if (!m || modelMats.includes(m)) return;
         modelMats.push(m);
-        if (m.map) {                       // keep the painted textures, only soften the metal
-          m.metalness = Math.min(m.metalness, 0.6);
-          m.roughness = Math.max(m.roughness, 0.35);
-          m.map.anisotropy = 16;
-        } else { m.roughness = 0.42; m.metalness = 0.9; }
-        m.transparent = true; m.opacity = 0;   // fades in once ready
+        if (m.map) { m.metalness = Math.min(m.metalness, 0.6); m.roughness = Math.max(m.roughness, 0.35); m.map.anisotropy = 8; }
+        else { m.roughness = 0.42; m.metalness = 0.9; }
+        m.transparent = true; m.opacity = 0;
       });
     });
-
-    if (gltf.animations && gltf.animations.length) {
-      const pick = (re) => gltf.animations.find((c) => re.test(c.name));
-      const clip = pick(/fly2/i) || pick(/fly/i) || pick(/stand|idle/i) || gltf.animations[0];
-      mixer = new THREE.AnimationMixer(gltfModel);
-      mixer.clipAction(normalizeClip(clip)).play();
-      mixer.update(0);
-    }
-    gltfModel.updateMatrixWorld(true);
-    const size = new THREE.Box3().setFromObject(gltfModel).getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
+    setupAnimations(gltf);
+    if (mixer) mixer.update(0);
+    scene.updateMatrixWorld(true);
+    /* size and centre are measured on the landed (stand) pose */
+    const box = new THREE.Box3().setFromObject(gltfModel);
+    const size = box.getSize(new THREE.Vector3()), maxDim = Math.max(size.x, size.y, size.z);
     gltfModel.scale.setScalar(isFinite(maxDim) && maxDim > 1e-4 ? targetMaxDim() / maxDim : 1);
-    gltfModel.updateMatrixWorld(true);
-    recenter(1);
+    scene.updateMatrixWorld(true);
+    const box2 = new THREE.Box3().setFromObject(gltfModel);
+    gltfModel.position.sub(box2.getCenter(new THREE.Vector3()));
+    scene.updateMatrixWorld(true);
+    floorY = new THREE.Box3().setFromObject(gltfModel).min.y - 0.2;
     modelPivot.position.y = -0.2;
+    if (skinned) { scene.updateMatrixWorld(true); anchor.copy(bonesCentre(new THREE.Vector3())); }
+    floorMesh = makeFloorGlow(); floorMesh.position.y = floorY + 0.03;
     modelReady = true;
     MT.status('');
   }, undefined, (e) => { console.error('Error loading model:', e); MT.status('The 3D dragon could not load. Refresh the page, or check that dragon.glb was uploaded next to index.html.', true); });
 }
 
+/* ---------- camera path: a different viewpoint for every chapter ---------- */
+/* scroll, azimuth (rad), radius, height, look-x */
+const KF = [[0, 0.0, 5.2, 0.35, -0.9], [0.09, 0.3, 5.0, 0.30, -0.5], [0.17, 1.3, 5.8, 1.55, 0], [0.22, 1.9, 4.0, 0.15, 0],
+  [0.28, 2.4, 4.4, 0.35, 0], [0.38, 2.9, 4.7, 0.40, 0], [0.46, 3.9, 6.0, 1.65, 0], [0.52, 4.5, 4.0, 0.15, 0],
+  [0.57, 4.9, 4.4, 0.40, 0], [0.67, 5.4, 4.9, 0.50, 0], [0.75, 6.0, 6.0, 1.75, 0], [0.80, 6.6, 4.0, 0.20, 0],
+  [0.85, 6.9, 4.5, 0.40, 0], [1, 7.6, 4.9, 0.45, 0]];
+function camAt(s) {
+  let i = 0; while (i < KF.length - 2 && s > KF[i + 1][0]) i++;
+  const a = KF[i], b = KF[i + 1];
+  const t = Math.min(1, Math.max(0, (s - a[0]) / (b[0] - a[0])));
+  return [1, 2, 3, 4].map((j) => a[j] + (b[j] - a[j]) * t);
+}
+const _target = new THREE.Vector3(), _look = new THREE.Vector3();
 
-/* ---------- main loop ---------- */
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.1);
   const time = clock.getElapsedTime();
-  if (mixer) mixer.update(dt);
-  const currentScroll = MT.scroll, targetScroll = MT.target;
+  const s = MT.scroll;
 
   if (modelReady) {
-    spinGroup.rotation.y += dt * 0.08;                          // slow idle spin
-    modelPivot.rotation.y = MT.mx * 0.25;                       // mouse tilt
-    modelPivot.rotation.x = MT.my * 0.15;
-    modelPivot.position.y = -0.2 + Math.sin(time * 0.8) * 0.03; // breathing float
-    if (++frameCount % 6 === 0) recenter(0.12);                 // keeps the flapping dragon centered
+    tickAnimation(dt, s);
+    if (mixer) mixer.update(dt);
+    followCentre(dt);
+    modelPivot.rotation.y = MT.mx * 0.12;                                  // gentle mouse tilt
+    modelPivot.rotation.x = MT.my * 0.06;
+    modelPivot.position.y = -0.2 + Math.sin(time * 0.8) * 0.015 * (1 - (MT.land || 0));
+    if (floorMesh) floorMesh.material.opacity = Math.max(0, ((MT.land || 0) - 0.4) / 0.6) * 0.9;
     if (modelAlpha < 1) {
       modelAlpha = Math.min(1, modelAlpha + dt / 1.2);
       modelMats.forEach((m) => { m.opacity = modelAlpha; if (modelAlpha >= 1) { m.transparent = false; m.needsUpdate = true; } });
@@ -225,7 +304,7 @@ function animate() {
 
   if (sparkParticles) {
     const pos = sparkParticles.geometry.attributes.position.array;
-    const vel = Math.abs(targetScroll - currentScroll);
+    const vel = Math.abs(MT.target - MT.scroll);
     const mult = 1.0 + vel * 9.0, turb = vel * 0.8;
     for (let i = 0; i < sparkCount; i++) {
       const k = i * 3, d = sparkData[i];
@@ -240,17 +319,17 @@ function animate() {
     sparkParticles.geometry.attributes.position.needsUpdate = true;
   }
 
-  const phi = currentScroll * Math.PI * 2.0;
-  const y = 0.3 + Math.sin(currentScroll * Math.PI) * 0.7;
-  const radius = 5.0 - Math.sin(currentScroll * Math.PI) * 0.6;
-  const tp = Math.min(1.0, currentScroll / 0.28);
-  const ease = (Math.cos(tp * Math.PI) + 1.0) * 0.5;
-  camera.position.lerp(new THREE.Vector3(radius * Math.sin(phi), y, radius * Math.cos(phi)), 0.025);
-  camera.lookAt(new THREE.Vector3(isMobile() ? 0 : -0.9 * ease, isMobile() ? -0.7 : -0.15, 0));
+  const [az, r, h, lx] = camAt(s);
+  const m = isMobile();
+  const rr = r + (m ? 0.5 : 0);
+  _target.set(rr * Math.sin(az), h, rr * Math.cos(az));
+  camera.position.lerp(_target, 1 - Math.exp(-dt * 3));
+  _look.set(m ? 0 : lx, (m ? -0.7 : -0.15) + (1 - (MT.land === undefined ? 1 : MT.land)) * 0.3, 0);
+  camera.lookAt(_look);
 
   shaderUniforms.uTime.value = time;
   shaderUniforms.uMouse.value.set(MT.mx, -MT.my);
-  shaderUniforms.uScroll.value = currentScroll;
+  shaderUniforms.uScroll.value = s;
   renderer.render(scene, camera);
 }
 window.addEventListener('resize', () => { if (renderer) onWindowResize(); });
@@ -260,23 +339,18 @@ function init() {
   scene.background = new THREE.Color('#070b24');
   scene.fog = new THREE.FogExp2('#070b24', 0.01);
   camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 100);
-  camera.position.set(0, 0.2, 3.0);
+  camera.position.set(0, 0.2, 5.5);
   scene.add(camera);
   createBackgroundShader();
   renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile(), alpha: false, powerPreference: 'high-performance' });
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(devicePixelRatio, maxPixelRatio()));
-  renderer.shadowMap.enabled = !isMobile();
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;   // no shadow maps: they only caused shimmering on the animated dragon
   renderer.toneMappingExposure = 2.2;
 
   scene.add(new THREE.AmbientLight('#ffffff', 0.35));
   const keyLight = new THREE.SpotLight('#ffffff', 18.0);
-  keyLight.position.set(4, 6, 3);
-  keyLight.angle = Math.PI / 4; keyLight.penumbra = 0.9; keyLight.castShadow = !isMobile();
-  keyLight.shadow.mapSize.set(2048, 2048);
-  keyLight.shadow.camera.near = 1.0; keyLight.shadow.camera.far = 15; keyLight.shadow.bias = -0.001;
+  keyLight.position.set(4, 6, 3); keyLight.angle = Math.PI / 4; keyLight.penumbra = 0.9;
   scene.add(keyLight);
   const rimLight = new THREE.DirectionalLight('#b996ff', 10.0);
   rimLight.position.set(-5, 3, -4); scene.add(rimLight);
