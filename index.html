@@ -248,6 +248,50 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
 
 .cover { height: auto; aspect-ratio: 951 / 396; object-fit: cover; border-radius: 16px; }
 
+
+/* sectioned gallery */
+.gsecs, #gallery { display: block; }
+.gsec { margin: 0 0 64px; }
+.ghead { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 18px; padding-left: 16px; border-left: 4px solid #a552e2; }
+.ghead h3 { margin: 0; font-family: 'Outfit', sans-serif; font-size: clamp(24px, 3.2vw, 36px); line-height: 1.1; font-weight: 700; color: #fff; }
+.ghead p { margin: 0; flex: 1 1 220px; color: #aab0bd; font-size: 15px; font-weight: 300; }
+.ghead .gcount { padding: 3px 12px; border-radius: 999px; border: 1px solid rgba(165,82,226,.6); background: rgba(165,82,226,.18); color: #e6d2ff; font-size: 12px; font-weight: 600; }
+
+@media (max-width: 760px) { .filters { flex-wrap: nowrap; overflow-x: auto; margin-right: -16px; padding-right: 16px; -webkit-overflow-scrolling: touch; } .filters button { flex: 0 0 auto; white-space: nowrap; } .gsec { margin-bottom: 44px; } }
+
+/* ===== fix: captions no longer cover the artwork ===== */
+.tile .cap, .tile:hover .cap, .tile:focus-visible .cap { display: none !important; }
+@media (hover: hover) and (pointer: fine) and (min-width: 701px) {
+  .tile:hover .cap, .tile:focus-visible .cap {
+    display: block !important; opacity: 1; transform: none;
+    left: 8px; right: 8px; bottom: 8px; padding: 6px 10px; border-radius: 10px;
+    font-size: 12px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    background: rgba(12,16,50,.72);
+  }
+  .tile:hover .cap small { display: none; }
+}
+
+/* ===== dragon: soft ground shadow + lift on every callout ===== */
+#webgl { transform-origin: 70% 55%; will-change: transform; }
+#webgl.fly { animation: dragonFly 1.5s cubic-bezier(.45,0,.25,1); }
+@keyframes dragonFly {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  35%  { transform: translate3d(0,-2.2vh,0) scale(1.025) rotate(-.4deg); }
+  70%  { transform: translate3d(0,-.8vh,0) scale(1.012) rotate(.3deg); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+.dragon-shadow { position: fixed; z-index: 2; left: 70%; bottom: 9vh; width: min(46vw, 560px); height: 8vh; margin-left: calc(min(46vw, 560px) / -2); pointer-events: none; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0,0,0,.34), rgba(0,0,0,.14) 55%, transparent 100%); filter: blur(10px); opacity: .55; transform-origin: center;
+  transition: opacity .6s ease; }
+.dragon-shadow.fly { animation: shadowFly 1.5s cubic-bezier(.45,0,.25,1); }
+@keyframes shadowFly {
+  0%   { transform: scale(1);   opacity: .55; }
+  35%  { transform: scale(.72); opacity: .28; }
+  70%  { transform: scale(.88); opacity: .4; }
+  100% { transform: scale(1);   opacity: .55; }
+}
+@media (max-width: 900px) { .dragon-shadow { left: 62%; width: 84vw; margin-left: -42vw; bottom: 12vh; } }
+@media (prefers-reduced-motion: reduce) { #webgl.fly, .dragon-shadow.fly { animation: none; } }
 </style>
 </head>
 <body>
@@ -263,7 +307,7 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
       <a href="#slide-3" class="nav-link">Motion</a><span class="nav-dot"></span>
       <a href="#work" class="nav-link">Work</a>
     </nav>
-    <div class="header-actions"><button id="snd" class="snd" type="button" aria-pressed="true" aria-label="Toggle sound"><span class="eq"><i></i><i></i><i></i></span><span class="lbl">Tap for sound</span></button><a href="#contact" class="contact-btn">Contact <span class="btn-circle"></span></a></div>
+    <div class="header-actions"><a href="#contact" class="contact-btn">Contact <span class="btn-circle"></span></a></div>
   </div>
 
   <div class="slide" id="slide-1">
@@ -303,6 +347,7 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
     </div>
   </div>
 </div>
+<div class="dragon-shadow" id="dragonShadow" aria-hidden="true"></div>
 <canvas id="webgl"></canvas>
 <div class="status" id="status" role="status">Loading…</div>
 <div id="stage"></div>
@@ -318,15 +363,19 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
     <section id="work">
       <span class="eyebrow rv">01 · Portfolio</span>
       <h2 class="rv">Selected Work</h2>
-      <p class="lead">Brand identities, campaigns and posters for clients across food, finance, logistics, legal services and technology. Tap any piece to enlarge it.</p>
+      <p class="lead">Covers, cars, food, campaigns, posters and full brand identities, each in its own section. Tap any piece to enlarge it.</p>
       <div class="filters" role="group" aria-label="Filter works">
         <button type="button" data-f="all" aria-pressed="true">All</button>
-        <button type="button" data-f="identity" aria-pressed="false">Identity &amp; Logos</button>
+        <button type="button" data-f="covers" aria-pressed="false">Covers</button>
+        <button type="button" data-f="characters" aria-pressed="false">Characters</button>
+        <button type="button" data-f="auto" aria-pressed="false">Automotive</button>
+        <button type="button" data-f="products" aria-pressed="false">Products</button>
+        <button type="button" data-f="food" aria-pressed="false">Food</button>
         <button type="button" data-f="campaigns" aria-pressed="false">Campaigns</button>
         <button type="button" data-f="posters" aria-pressed="false">Posters</button>
+        <button type="button" data-f="identity" aria-pressed="false">Identity</button>
       </div>
       <div class="gallery" id="gallery"></div>
-      <button class="more" id="more" type="button">Show more work</button>
     </section>
 
     <section id="about">
@@ -412,6 +461,31 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
 <dialog id="dlg"><div class="lb"><button class="x" id="close" type="button" aria-label="Close">&times;</button><button class="nv prev" id="prev" type="button" aria-label="Previous">&#8249;</button><figure><img id="big" alt=""><figcaption><small id="cat"></small><span id="cap"></span><em id="cnt"></em></figcaption></figure><button class="nv next" id="next" type="button" aria-label="Next">&#8250;</button></div></dialog>
 
 <script src="ui.js"></script>
+<script>
+/* dragon lifts / flaps each time a new callout (cloud) appears; hides shadow once the stage ends */
+(function () {
+  var cv = document.getElementById('webgl'), sh = document.getElementById('dragonShadow'), box = document.getElementById('callouts');
+  if (!cv || !sh || !box) return;
+  function fly() {
+    [cv, sh].forEach(function (el) { el.classList.remove('fly'); void el.offsetWidth; el.classList.add('fly'); });
+  }
+  [cv, sh].forEach(function (el) { el.addEventListener('animationend', function () { el.classList.remove('fly'); }); });
+  var seen = new WeakSet();
+  new MutationObserver(function (list) {
+    for (var i = 0; i < list.length; i++) {
+      var t = list[i].target;
+      if (t.classList && t.classList.contains('callout') && t.classList.contains('active') && !seen.has(t)) { seen.add(t); fly(); }
+      if (t.classList && t.classList.contains('callout') && !t.classList.contains('active')) seen.delete(t);
+    }
+  }).observe(box, { attributes: true, attributeFilter: ['class'], subtree: true });
+  function fade() {
+    var past = window.scrollY > document.getElementById('stage').offsetHeight - innerHeight * 0.6;
+    sh.style.display = past ? 'none' : '';
+  }
+  addEventListener('scroll', fade, { passive: true }); fade();
+})();
+</script>
+
 <script>
 /* Loads three.js from the first CDN that answers, then starts the 3D scene.
    If every CDN is blocked the page still works and shows a message. */
