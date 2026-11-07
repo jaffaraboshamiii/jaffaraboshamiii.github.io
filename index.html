@@ -271,27 +271,10 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
   .tile:hover .cap small { display: none; }
 }
 
-/* ===== dragon: soft ground shadow + lift on every callout ===== */
-#webgl { transform-origin: 70% 55%; will-change: transform; }
-#webgl.fly { animation: dragonFly 1.5s cubic-bezier(.45,0,.25,1); }
-@keyframes dragonFly {
-  0%   { transform: translate3d(0,0,0) scale(1); }
-  35%  { transform: translate3d(0,-2.2vh,0) scale(1.025) rotate(-.4deg); }
-  70%  { transform: translate3d(0,-.8vh,0) scale(1.012) rotate(.3deg); }
-  100% { transform: translate3d(0,0,0) scale(1); }
-}
+/* ===== dragon: soft static ground shadow ===== */
 .dragon-shadow { position: fixed; z-index: 2; left: 70%; bottom: 9vh; width: min(46vw, 560px); height: 8vh; margin-left: calc(min(46vw, 560px) / -2); pointer-events: none; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(0,0,0,.34), rgba(0,0,0,.14) 55%, transparent 100%); filter: blur(10px); opacity: .55; transform-origin: center;
-  transition: opacity .6s ease; }
-.dragon-shadow.fly { animation: shadowFly 1.5s cubic-bezier(.45,0,.25,1); }
-@keyframes shadowFly {
-  0%   { transform: scale(1);   opacity: .55; }
-  35%  { transform: scale(.72); opacity: .28; }
-  70%  { transform: scale(.88); opacity: .4; }
-  100% { transform: scale(1);   opacity: .55; }
-}
+  background: radial-gradient(closest-side, rgba(0,0,0,.34), rgba(0,0,0,.14) 55%, transparent 100%); filter: blur(10px); opacity: .55; }
 @media (max-width: 900px) { .dragon-shadow { left: 62%; width: 84vw; margin-left: -42vw; bottom: 12vh; } }
-@media (prefers-reduced-motion: reduce) { #webgl.fly, .dragon-shadow.fly { animation: none; } }
 </style>
 </head>
 <body>
@@ -462,145 +445,12 @@ dialog::backdrop { background: rgba(4,6,20,.82); -webkit-backdrop-filter: blur(1
 
 <script src="ui.js"></script>
 <script>
-/* Dragon choreography: a different move with every callout (cloud) + embers, fog, roar flash and fire breath */
+/* soft dragon shadow: hide it once the 3D stage has scrolled away */
 (function () {
-  var cv = document.getElementById('webgl'), sh = document.getElementById('dragonShadow'), box = document.getElementById('callouts');
-  if (!cv || !sh || !box || !cv.animate) return;
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  /* ---- tune here: where the mouth is (fraction of the screen) and where the fire goes (degrees, 180 = left) ---- */
-  var MOUTH = { x: 0.60, y: 0.40 }, FIRE_DIR = 165;
-
-  var css = document.createElement('style');
-  css.textContent =
-    '#dragonFx{position:fixed;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}' +
-    '#dragonFog{position:fixed;inset:-10%;z-index:3;pointer-events:none;opacity:0;filter:blur(24px);' +
-    'background:radial-gradient(40% 30% at 30% 50%,rgba(200,180,255,.30),transparent 70%),radial-gradient(45% 35% at 70% 40%,rgba(165,82,226,.26),transparent 72%),radial-gradient(50% 30% at 55% 75%,rgba(220,210,255,.2),transparent 70%)}' +
-    '#dragonFlash{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;' +
-    'background:radial-gradient(60% 55% at 62% 45%,rgba(255,80,30,.38),rgba(227,17,4,.14) 45%,transparent 75%)}';
-  document.head.appendChild(css);
-  function mk(tag, id) { var e = document.createElement(tag); e.id = id; e.setAttribute('aria-hidden', 'true'); document.body.insertBefore(e, cv.nextSibling); return e; }
-  var fx = mk('canvas', 'dragonFx'), fog = mk('div', 'dragonFog'), flash = mk('div', 'dragonFlash');
-  var ctx = fx.getContext('2d'), W = 0, H = 0, dpr = 1;
-  function size() { dpr = Math.min(window.devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; fx.width = W * dpr; fx.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
-  size(); addEventListener('resize', size);
-
-  /* ---- particles ---- */
-  var P = [], running = false, last = 0;
-  function rnd(a, b) { return a + Math.random() * (b - a); }
-  function ember(x, y, spread) {
-    P.push({ k: 'e', x: x + rnd(-spread, spread), y: y + rnd(-spread, spread), vx: rnd(-30, 30), vy: rnd(-90, -25), s: rnd(1, 3), life: 0, max: rnd(1.2, 2.6), h: Math.random() < .22 ? 280 : rnd(12, 42) });
-    start();
-  }
-  function fire(x, y, dir, spread, speed) {
-    var a = (dir + rnd(-spread, spread)) * Math.PI / 180, v = rnd(speed * .6, speed);
-    P.push({ k: 'f', x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 10, s: rnd(10, 22), life: 0, max: rnd(.6, 1.2) });
-    start();
-  }
-  function start() { if (!running) { running = true; last = performance.now(); requestAnimationFrame(tick); } }
-  function tick(t) {
-    var dt = Math.min((t - last) / 1000, .05); last = t;
-    ctx.clearRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'lighter';
-    for (var i = P.length - 1; i >= 0; i--) {
-      var p = P[i]; p.life += dt;
-      if (p.life >= p.max) { P.splice(i, 1); continue; }
-      var u = p.life / p.max;
-      p.x += p.vx * dt; p.y += p.vy * dt;
-      if (p.k === 'e') {
-        p.vx += Math.sin(p.life * 6 + p.x) * 14 * dt; p.vy -= 10 * dt;
-        ctx.fillStyle = 'hsla(' + p.h + ',100%,' + (62 - 12 * u) + '%,' + (1 - u) + ')';
-        ctx.shadowColor = 'hsla(' + p.h + ',100%,55%,.9)'; ctx.shadowBlur = 8;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.s * (1 - u * .5), 0, 6.283); ctx.fill();
-        ctx.shadowBlur = 0;
-      } else {
-        p.vx *= (1 - .8 * dt); p.vy *= (1 - .8 * dt); p.vy -= 40 * dt;
-        var r = p.s * (1 + u * 3.2), hue = 55 - 52 * u, l = 62 - 14 * u, al = (1 - u) * .55;
-        var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
-        g.addColorStop(0, 'hsla(' + hue + ',100%,' + l + '%,' + al + ')');
-        g.addColorStop(1, 'hsla(' + (hue - 8) + ',100%,40%,0)');
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.283); ctx.fill();
-      }
-    }
-    ctx.globalCompositeOperation = 'source-over';
-    if (P.length) requestAnimationFrame(tick); else { running = false; ctx.clearRect(0, 0, W, H); }
-  }
-  function mouth() { return { x: W * MOUTH.x, y: H * MOUTH.y }; }
-  function trail(ms, rate) {            /* embers during a move */
-    var t0 = performance.now(), iv = setInterval(function () {
-      if (performance.now() - t0 > ms) { clearInterval(iv); return; }
-      var m = mouth(); for (var i = 0; i < rate; i++) ember(m.x + rnd(-W * .12, W * .12), m.y + rnd(-H * .06, H * .12), 6);
-    }, 90);
-  }
-  function breathe(delay, ms) {         /* fire breath */
-    setTimeout(function () {
-      var t0 = performance.now(), iv = setInterval(function () {
-        if (performance.now() - t0 > ms) { clearInterval(iv); return; }
-        var m = mouth(); for (var i = 0; i < 5; i++) fire(m.x, m.y, FIRE_DIR, 11, W * .75);
-        ember(m.x, m.y, 14);
-      }, 16);
-    }, delay);
-  }
-  function glow(delay, peak, ms) {
-    setTimeout(function () { flash.animate([{ opacity: 0 }, { opacity: peak, offset: .25 }, { opacity: 0 }], { duration: ms, easing: 'ease-out' }); }, delay);
-  }
-
-  /* ---- moves ---- */
-  var T = 'perspective(1400px) ', ease = 'cubic-bezier(.45,0,.25,1)';
-  var moves = {
-    glide: { d: 3800, o: [0, .3, .65, .85, 1], trail: [3800, 1],
-      cv: [T + 'translate3d(0,0,0) rotateZ(0)', T + 'translate3d(-4vw,-1.5vh,0) rotateZ(-3deg) rotateY(8deg)', T + 'translate3d(4vw,-2.5vh,0) rotateZ(3deg) rotateY(-8deg)', T + 'translate3d(-1.5vw,-.8vh,0) rotateZ(-1deg)', T + 'translate3d(0,0,0) rotateZ(0)'],
-      sh: [[1, 1, 1], [.92, .9, .8], [1.08, .88, .75], [.97, .95, .9], [1, 1, 1]] },
-    swoop: { d: 2600, o: [0, .3, .55, .8, 1], trail: [2600, 2],
-      cv: [T + 'translate3d(0,0,0) scale(1)', T + 'translate3d(0,-5vh,0) scale(.9) rotateX(8deg)', T + 'translate3d(-3vw,3vh,0) scale(1.28) rotateZ(-4deg)', T + 'translate3d(2vw,-1vh,0) scale(1.05)', T + 'translate3d(0,0,0) scale(1)'],
-      sh: [[1, 1, 1], [.6, .6, .4], [1.35, 1.2, 1], [.9, .9, .75], [1, 1, 1]] },
-    roar: { d: 1800, o: [0, .12, .22, .32, .42, .52, .75, 1], trail: [1800, 3],
-      cv: [T + 'scale(1)', T + 'scale(1.1) translate3d(0,-1vh,0)', T + 'scale(1.12) translate3d(-.6vw,-1vh,0)', T + 'scale(1.12) translate3d(.6vw,-1vh,0)', T + 'scale(1.1) translate3d(-.5vw,-1vh,0)', T + 'scale(1.1) translate3d(.4vw,-1vh,0)', T + 'scale(1.04)', T + 'scale(1)'],
-      sh: [[1, 1, 1], [1.1, 1.1, 1], [1.12, 1.1, 1], [1.12, 1.1, 1], [1.1, 1.1, 1], [1.1, 1.1, 1], [1.03, 1.03, 1], [1, 1, 1]],
-      extra: function () { glow(150, 1, 1300); var m = mouth(); for (var i = 0; i < 28; i++) ember(m.x, m.y, 30); } },
-    loop: { d: 3600, o: [0, .125, .25, .375, .5, .625, .75, .875, 1], trail: [3600, 2],
-      cv: [T + 'translate3d(0,0,0) scale(1)', T + 'translate3d(4.5vw,-4vh,0) scale(.9) rotateY(-12deg)', T + 'translate3d(6vw,-8vh,0) scale(.78) rotateY(-22deg)', T + 'translate3d(4.5vw,-12vh,0) scale(.7) rotateY(-12deg)', T + 'translate3d(0,-14vh,0) scale(.68)', T + 'translate3d(-4.5vw,-12vh,0) scale(.7) rotateY(12deg)', T + 'translate3d(-6vw,-8vh,0) scale(.78) rotateY(22deg)', T + 'translate3d(-4.5vw,-4vh,0) scale(.9) rotateY(12deg)', T + 'translate3d(0,0,0) scale(1)'],
-      sh: [[1, 1, 1], [.9, .9, .8], [.8, .8, .6], [.7, .7, .45], [.65, .65, .4], [.7, .7, .45], [.8, .8, .6], [.9, .9, .8], [1, 1, 1]] },
-    cloud: { d: 3200, o: [0, .35, .6, 1], trail: [3200, 1],
-      cv: [{ transform: T + 'translate3d(0,0,0) scale(1)', filter: 'brightness(1) blur(0px)' }, { transform: T + 'translate3d(3vw,-3vh,0) scale(.8)', filter: 'brightness(.55) blur(2.5px)' }, { transform: T + 'translate3d(1vw,-2vh,0) scale(.85)', filter: 'brightness(.65) blur(1.5px)' }, { transform: T + 'translate3d(0,0,0) scale(1)', filter: 'brightness(1) blur(0px)' }],
-      sh: [[1, 1, 1], [.7, .7, .5], [.75, .75, .55], [1, 1, 1]],
-      extra: function () { fog.animate([{ opacity: 0, transform: 'translateX(-4vw)' }, { opacity: 1, offset: .35 }, { opacity: .9, offset: .6 }, { opacity: 0, transform: 'translateX(5vw)' }], { duration: 3200, easing: 'ease-in-out' }); } },
-    attack: { d: 3600, o: [0, .2, .36, .62, .85, 1], trail: [3600, 2],
-      cv: [T + 'translate3d(0,0,0) scale(1)', T + 'translate3d(5vw,-3vh,0) scale(.82) rotateY(15deg)', T + 'translate3d(-4vw,2vh,0) scale(1.3) rotateY(-8deg)', T + 'translate3d(-4.4vw,2.2vh,0) scale(1.26) rotateY(-6deg)', T + 'translate3d(1vw,-1vh,0) scale(1.05)', T + 'translate3d(0,0,0) scale(1)'],
-      sh: [[1, 1, 1], [.6, .6, .4], [1.4, 1.2, 1], [1.38, 1.2, 1], [.95, .95, .8], [1, 1, 1]],
-      extra: function () { breathe(1250, 1000); glow(1250, .9, 1500); } }
-  };
-  var names = ['glide', 'swoop', 'attack', 'loop', 'roar', 'cloud'], prev = '', prev2 = '', busy = false;
-
-  function pick() {
-    var n; do { n = names[Math.floor(Math.random() * names.length)]; } while (n === prev || n === prev2);
-    prev2 = prev; prev = n; return n;
-  }
-  function play(name) {
-    var m = moves[name];
-    cv.getAnimations().forEach(function (a) { a.cancel(); });
-    sh.getAnimations().forEach(function (a) { a.cancel(); });
-    cv.animate(m.cv.map(function (t, i) { var k = typeof t === 'string' ? { transform: t } : t; k.offset = m.o[i]; return k; }), { duration: m.d, easing: ease });
-    sh.animate(m.sh.map(function (k, i) { return { transform: 'scale(' + k[0] + ',' + k[1] + ')', opacity: .55 * k[2], offset: m.o[i] }; }), { duration: m.d, easing: ease });
-    trail(m.trail[0], m.trail[1]);
-    if (m.extra) m.extra();
-  }
-
-  var seen = new WeakSet();
-  new MutationObserver(function (list) {
-    for (var i = 0; i < list.length; i++) {
-      var t = list[i].target;
-      if (!t.classList || !t.classList.contains('callout')) continue;
-      if (t.classList.contains('active')) { if (!seen.has(t)) { seen.add(t); play(pick()); } }
-      else seen.delete(t);
-    }
-  }).observe(box, { attributes: true, attributeFilter: ['class'], subtree: true });
-
-  function fade() {
-    var past = window.scrollY > document.getElementById('stage').offsetHeight - innerHeight * 0.6;
-    sh.style.display = fx.style.display = past ? 'none' : '';
-  }
-  addEventListener('scroll', fade, { passive: true }); fade();
+  var sh = document.getElementById('dragonShadow'), st = document.getElementById('stage');
+  if (!sh || !st) return;
+  function f() { sh.style.display = window.scrollY > st.offsetHeight - innerHeight * 0.6 ? 'none' : ''; }
+  addEventListener('scroll', f, { passive: true }); f();
 })();
 </script>
 
